@@ -258,14 +258,16 @@ function LandingPage() {
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to={p.demoPath} className="relative group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all duration-300 overflow-hidden bg-white text-deep-900 hover:shadow-[0_0_24px_rgba(255,255,255,0.12)] hover:scale-[1.02] active:scale-[0.98]">
-                    {p.id === 'insight' ? '🎯' : '📚'} 立即体验 Demo
+                    {p.id === 'insight' ? '🎯' : p.id === 'aicleaner' ? '✨' : '📚'} {p.id === 'aicleaner' ? '免费使用' : '立即体验 Demo'}
                     <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none">
                       <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
-                  <CTAButton onClick={() => setShowPurchase(true)}>
-                    获取商业版
-                  </CTAButton>
+                  {p.id !== 'aicleaner' && (
+                    <CTAButton onClick={() => setShowPurchase(true)}>
+                      获取商业版
+                    </CTAButton>
+                  )}
                 </div>
               </div>
             </article>
