@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import { usePageMeta } from './hooks/usePageMeta'
 import InsightDemo from './demo/InsightDemo'
 import ClassicoreDemo from './demo/ClassicoreDemo'
+import AiCleanerDemo from './demo/AiCleanerDemo'
 
 const products = [
   {
@@ -26,6 +27,25 @@ const products = [
         <line x1="2" y1="20" x2="8" y2="20" stroke="currentColor" strokeWidth="1.5" />
         <line x1="32" y1="20" x2="38" y2="20" stroke="currentColor" strokeWidth="1.5" />
         <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    id: "aicleaner",
+    title: "净言",
+    subtitle: "AI Cleaner",
+    tagline: "让 AI 文本回归自然",
+    tags: ["去AI味", "降重", "润色"],
+    description:
+      "输入 AI 生成的文本，一键去除机器味。支持通用去AI味、学术降重、商务润色、社交媒体口语化四大场景。基于 OpenAI 大模型，让你的内容更像人类所写。",
+    demoPath: "/demo/aicleaner",
+    purchaseUrl: "https://humanwrite.com/aicleaner/pricing",
+    accent: "from-emerald-500 to-teal-500",
+    glowColor: "rgba(16,185,129,0.15)",
+    icon: (
+      <svg className="w-10 h-10" viewBox="0 0 40 40" fill="none">
+        <path d="M20 4L23 17L36 20L23 23L20 36L17 23L4 20L17 17Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <circle cx="20" cy="20" r="3" fill="currentColor" />
       </svg>
     ),
   },
@@ -163,6 +183,7 @@ export default function App() {
     <Routes>
       <Route path="/demo/insight" element={<InsightDemo />} />
       <Route path="/demo/classicore" element={<ClassicoreDemo />} />
+      <Route path="/demo/aicleaner" element={<AiCleanerDemo />} />
       <Route path="/*" element={<LandingPage />} />
     </Routes>
   )
