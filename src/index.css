@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-deep-900 text-text-primary antialiased;
+    font-family: "Inter", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-deep-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-deep-500 rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-text-muted;
+}
