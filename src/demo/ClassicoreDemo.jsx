@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
@@ -19,6 +19,8 @@ export default function ClassicoreDemo() {
   const [copied, setCopied] = useState(false)
   const [tourDone, setTourDone] = useState(false)
   const tourRef = useRef(null)
+  const [mobilePanel, setMobilePanel] = useState(0)
+  const mobileScrollRef = useRef(null)
 
   usePageMeta({
     title: '典萃 ClassiCore Demo — 经典著作内容生产流水线',
@@ -81,6 +83,17 @@ export default function ClassicoreDemo() {
     return () => clearTimeout(timer)
   }, [])
 
+  const handleMobileScroll = useCallback(() => {
+    if (!mobileScrollRef.current) return
+    const idx = Math.round(mobileScrollRef.current.scrollLeft / mobileScrollRef.current.clientWidth)
+    setMobilePanel(idx)
+  }, [])
+
+  const scrollToPanel = useCallback((index) => {
+    if (!mobileScrollRef.current) return
+    mobileScrollRef.current.scrollTo({ left: mobileScrollRef.current.clientWidth * index, behavior: 'smooth' })
+  }, [])
+
   const handleBookClick = (book) => {
     setSelectedBook(book)
     setSelectedTopic(null)
@@ -93,6 +106,7 @@ export default function ClassicoreDemo() {
     setSelectedTopic(topic)
     setCapsule(capsules[topic.capsule_id] || null)
     setScript(null)
+    scrollToPanel(1)
   }
 
   const handleGenerateScript = (platform) => {
@@ -103,6 +117,7 @@ export default function ClassicoreDemo() {
     } else {
       setScript(`# ${platformLabels[platform]} 脚本\n\n基于「${selectedTopic?.topic_name}」生成的内容脚本。\n\n在完整版中，AI将根据知识胶囊内容自动生成适配${platformLabels[platform]}平台风格的专业脚本。`)
     }
+    scrollToPanel(2)
   }
 
   const handleCopy = async () => {
@@ -187,143 +202,157 @@ export default function ClassicoreDemo() {
 
       {/* Workspace View */}
       {view === 'workspace' && selectedBook && (
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden" id="demo-workspace">
-          {/* Left Panel — Topics */}
-          <div className={`flex-1 flex-col w-full lg:w-72 border-r border-slate-800 ${!selectedTopic ? 'flex' : 'hidden'} lg:flex lg:flex-none lg:shrink-0`}>
-            <div className="px-4 py-3 border-b border-slate-800">
-              <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                主题列表 ({selectedBook.topics.length})
-              </h2>
+        <div className="flex-1 flex flex-col overflow-hidden" id="demo-workspace">
+          {/* Unified scroll-snap (mobile) / flex-row (desktop) panels */}
+          <div
+            ref={mobileScrollRef}
+            onScroll={handleMobileScroll}
+            className="flex-1 flex overflow-x-auto snap-x snap-mandatory scroll-smooth lg:overflow-visible lg:snap-none hide-scrollbar"
+          >
+            {/* Left Panel — Topics */}
+            <div className="w-full flex-shrink-0 snap-start flex flex-col border-r border-slate-800 lg:w-72 lg:flex-none overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-800">
+                <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  主题列表 ({selectedBook.topics.length})
+                </h2>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {selectedBook.topics.map(topic => (
+                  <button
+                    key={topic.id}
+                    onClick={() => handleTopicClick(topic)}
+                    className={`w-full text-left p-3 rounded-xl transition-all ${
+                      selectedTopic?.id === topic.id
+                        ? 'bg-amber-500/10 border border-amber-500/20'
+                        : 'bg-slate-800/30 border border-transparent hover:bg-slate-800/50'
+                    }`}
+                  >
+                    <p className="text-sm font-medium text-stone-200 line-clamp-2">{topic.topic_name}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] text-slate-500">第 {topic.page_start}-{topic.page_end} 页</span>
+                      {topic.capsule_id && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">已生成</span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {selectedBook.topics.map(topic => (
-                <button
-                  key={topic.id}
-                  onClick={() => handleTopicClick(topic)}
-                  className={`w-full text-left p-3 rounded-xl transition-all ${
-                    selectedTopic?.id === topic.id
-                      ? 'bg-amber-500/10 border border-amber-500/20'
-                      : 'bg-slate-800/30 border border-transparent hover:bg-slate-800/50'
-                  }`}
-                >
-                  <p className="text-sm font-medium text-stone-200 line-clamp-2">{topic.topic_name}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-[10px] text-slate-500">第 {topic.page_start}-{topic.page_end} 页</span>
-                    {topic.capsule_id && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">已生成</span>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Center Panel — Capsule */}
-          <div className={`flex-1 flex-col min-w-0 border-r border-slate-800 ${selectedTopic && !script ? 'flex' : 'hidden'} lg:flex`}>
-            {capsule && selectedTopic ? (
-              <>
-                <div className="px-5 py-4 border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => { setSelectedTopic(null); setCapsule(null); setScript(null) }} className="text-slate-400 hover:text-stone-200 text-sm transition-colors lg:hidden mr-1">
-                      ←
-                    </button>
-                    <span className="text-amber-500/60">#</span>
-                    <h2 className="text-sm font-semibold text-stone-200">{selectedTopic.topic_name}</h2>
-                    <span className="text-[10px] text-slate-500 ml-auto">
-                      第 {selectedTopic.page_start}-{selectedTopic.page_end} 页
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-5 space-y-5" id="demo-capsule">
-                  {/* Original Text */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-amber-500/60 text-sm">💬</span>
-                      <span className="text-xs font-medium text-slate-400">原文引用</span>
-                    </div>
-                    <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
-                      <p className="text-sm text-stone-300 leading-relaxed">{capsule.original_text}</p>
+            {/* Center Panel — Capsule */}
+            <div className="w-full flex-shrink-0 snap-start flex flex-col min-w-0 border-r border-slate-800 lg:flex-1 lg:shrink overflow-hidden">
+              {capsule && selectedTopic ? (
+                <>
+                  <div className="px-5 py-4 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => scrollToPanel(0)} className="text-slate-400 hover:text-stone-200 text-sm transition-colors lg:hidden mr-1">
+                        ←
+                      </button>
+                      <span className="text-amber-500/60">#</span>
+                      <h2 className="text-sm font-semibold text-stone-200">{selectedTopic.topic_name}</h2>
+                      <span className="text-[10px] text-slate-500 ml-auto">
+                        第 {selectedTopic.page_start}-{selectedTopic.page_end} 页
+                      </span>
                     </div>
                   </div>
-                  {/* Modern Interpretation */}
-                  {capsule.modern_interpretation && (
+                  <div className="flex-1 overflow-y-auto p-5 space-y-5" id="demo-capsule">
+                    {/* Original Text */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-amber-500/60 text-sm">👤</span>
-                        <span className="text-xs font-medium text-slate-400">现代解读</span>
+                        <span className="text-amber-500/60 text-sm">💬</span>
+                        <span className="text-xs font-medium text-slate-400">原文引用</span>
                       </div>
-                      <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4">
-                        <p className="text-sm text-stone-300 leading-relaxed">{capsule.modern_interpretation}</p>
+                      <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
+                        <p className="text-sm text-stone-300 leading-relaxed">{capsule.original_text}</p>
                       </div>
                     </div>
-                  )}
-                  {/* Script Generation */}
-                  <div id="demo-script-gen">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-amber-500/60 text-sm">✨</span>
-                      <span className="text-xs font-medium text-slate-400">生成脚本</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.entries(platformLabels).map(([key, label]) => (
-                        <button
-                          key={key}
-                          onClick={() => handleGenerateScript(key)}
-                          className="flex flex-col items-center gap-1.5 px-3 py-3 bg-slate-800/30 border border-slate-700/50 rounded-xl hover:bg-slate-700/50 hover:border-amber-500/30 transition-all"
-                        >
-                          <span className="text-lg">{platformIcons[key]}</span>
-                          <span className="text-xs text-slate-400">{label}</span>
-                        </button>
-                      ))}
+                    {/* Modern Interpretation */}
+                    {capsule.modern_interpretation && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-amber-500/60 text-sm">👤</span>
+                          <span className="text-xs font-medium text-slate-400">现代解读</span>
+                        </div>
+                        <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4">
+                          <p className="text-sm text-stone-300 leading-relaxed">{capsule.modern_interpretation}</p>
+                        </div>
+                      </div>
+                    )}
+                    {/* Script Generation */}
+                    <div id="demo-script-gen">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-amber-500/60 text-sm">✨</span>
+                        <span className="text-xs font-medium text-slate-400">生成脚本</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {Object.entries(platformLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => handleGenerateScript(key)}
+                            className="flex flex-col items-center gap-1.5 px-3 py-3 bg-slate-800/30 border border-slate-700/50 rounded-xl hover:bg-slate-700/50 hover:border-amber-500/30 transition-all"
+                          >
+                            <span className="text-lg">{platformIcons[key]}</span>
+                            <span className="text-xs text-slate-400">{label}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-3xl text-slate-700 mb-3">📖</div>
+                    <p className="text-sm text-slate-600">从左栏选择一个主题</p>
+                    <p className="text-xs text-slate-700 mt-1">点击主题将自动生成对应的知识胶囊</p>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-3xl text-slate-700 mb-3">📖</div>
-                  <p className="text-sm text-slate-600">从左栏选择一个主题</p>
-                  <p className="text-xs text-slate-700 mt-1">点击主题将自动生成对应的知识胶囊</p>
+              )}
+            </div>
+
+            {/* Right Panel — Script Editor */}
+            <div className="w-full flex-shrink-0 snap-start flex flex-col lg:w-96 lg:flex-none overflow-hidden">
+              {script ? (
+                <>
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => scrollToPanel(1)} className="text-slate-400 hover:text-stone-200 text-sm transition-colors lg:hidden mr-1">
+                        ←
+                      </button>
+                      <span className="text-lg">{platformIcons[scriptPlatform]}</span>
+                      <span className="text-sm font-medium text-stone-200">{platformLabels[scriptPlatform]}</span>
+                    </div>
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-stone-200 transition-all"
+                    >
+                      {copied ? <>✓ 已复制</> : <>📋 复制</>}
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+                    <textarea
+                      value={script}
+                      readOnly
+                      className="w-full h-full bg-transparent text-sm text-stone-300 leading-relaxed resize-none focus:outline-none font-sans"
+                      spellCheck={false}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center px-6">
+                  <span className="text-3xl text-slate-700 mb-3">📄</span>
+                  <p className="text-sm text-slate-600">脚本编辑器</p>
+                  <p className="text-xs text-slate-700 mt-1">选中胶囊后点击平台按钮，脚本将在此处展示</p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Right Panel — Script Editor */}
-          <div className={`flex-1 flex-col w-full lg:w-96 ${script ? 'flex' : 'hidden'} lg:flex lg:flex-none lg:shrink-0`}>
-            {script ? (
-              <>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setScript(null)} className="text-slate-400 hover:text-stone-200 text-sm transition-colors lg:hidden mr-1">
-                      ←
-                    </button>
-                    <span className="text-lg">{platformIcons[scriptPlatform]}</span>
-                    <span className="text-sm font-medium text-stone-200">{platformLabels[scriptPlatform]}</span>
-                  </div>
-                  <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-stone-200 transition-all"
-                  >
-                    {copied ? <>✓ 已复制</> : <>📋 复制</>}
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                  <textarea
-                    value={script}
-                    readOnly
-                    className="w-full h-full bg-transparent text-sm text-stone-300 leading-relaxed resize-none focus:outline-none font-sans"
-                    spellCheck={false}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                <span className="text-3xl text-slate-700 mb-3">📄</span>
-                <p className="text-sm text-slate-600">脚本编辑器</p>
-                <p className="text-xs text-slate-700 mt-1">选中胶囊后点击平台按钮，脚本将在此处展示</p>
-              </div>
-            )}
+          {/* Mobile dot indicators */}
+          <div className="lg:hidden flex justify-center gap-3 py-2.5 border-t border-slate-800 shrink-0 bg-[#0f172a]">
+            <button onClick={() => scrollToPanel(0)} className={`h-2 rounded-full transition-all duration-300 ${mobilePanel === 0 ? 'w-6 bg-amber-500' : 'w-2 bg-slate-700'}`} />
+            <button onClick={() => scrollToPanel(1)} className={`h-2 rounded-full transition-all duration-300 ${mobilePanel === 1 ? 'w-6 bg-amber-500' : 'w-2 bg-slate-700'}`} />
+            <button onClick={() => scrollToPanel(2)} className={`h-2 rounded-full transition-all duration-300 ${mobilePanel === 2 ? 'w-6 bg-amber-500' : 'w-2 bg-slate-700'}`} />
           </div>
         </div>
       )}
