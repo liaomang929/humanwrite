@@ -3,34 +3,535 @@
 @tailwind utilities;
 
 @layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-bg: #ffffff;
+    --color-bg-secondary: #f5f5f7;
+    --color-text-primary: #1d1d1f;
+    --color-text-secondary: #6e6e73;
+    --color-text-tertiary: #aeaeb2;
+    --color-border: #e5e5ea;
+    --color-border-light: #f0f0f5;
+    --color-blue: #185FA5;
+    --color-blue-light: #E6F1FB;
+    --color-blue-border: #B5D4F4;
+    --color-blue-text: #0C447C;
+    --color-green: #0F6E56;
+    --color-green-light: #EAF3DE;
+    --color-green-text: #27500A;
+    --color-red: #E24B4A;
+    --color-red-light: #FCEBEB;
+    --color-red-text: #A32D2D;
+    --color-amber: #EF9F27;
+    --color-amber-light: #FAEEDA;
+    --color-amber-text: #633806;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
+
   body {
-    @apply bg-deep-900 text-text-primary antialiased;
-    font-family: "Inter", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-deep-900;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-deep-500 rounded;
-}
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-text-muted;
+@layer components {
+  /* ── Stats Card ── */
+  .stat-card {
+    background: var(--color-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .stat-eyebrow {
+    font-size: 9px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .stat-number {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-number.green { color: var(--color-green); }
+  .stat-number.blue { color: var(--color-blue); }
+  .stat-subtitle {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+  .stat-rows {
+    border-top: 0.5px solid var(--color-border-light);
+    padding-top: 6px;
+  }
+  .srow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    font-size: 9px;
+  }
+  .srow-label { color: var(--color-text-secondary); }
+  .pill {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .pill-green { background: var(--color-green-light); color: var(--color-green-text); }
+  .pill-amber { background: var(--color-amber-light); color: var(--color-amber-text); }
+
+  /* ── Probability Bars ── */
+  .pb-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .pb-label {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    width: 24px;
+    flex-shrink: 0;
+  }
+  .pb-track {
+    flex: 1;
+    height: 4px;
+    background: var(--color-bg-secondary);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .pb-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+  .pb-fill.red { background: var(--color-red); }
+  .pb-fill.amber { background: var(--color-amber); }
+  .pb-fill.blue { background: #378ADD; }
+  .pb-pct {
+    font-size: 10px;
+    font-weight: 500;
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* ── Signal Bars ── */
+  .sig-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sig-label {
+    font-size: 9px;
+    color: var(--color-text-tertiary);
+  }
+  .sig-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+  }
+  .sig-bar {
+    width: 4px;
+    border-radius: 1px;
+  }
+  .sig-bar.on { background: var(--color-blue); }
+  .sig-bar.off {
+    background: var(--color-bg-secondary);
+    border: 0.5px solid var(--color-border);
+  }
+
+  /* ── Section Header ── */
+  .sec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px 8px;
+    border-top: 0.5px solid var(--color-border-light);
+  }
+  .sec-title {
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .sec-badge {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--color-blue-light);
+    color: var(--color-blue-text);
+  }
+  .sec-link {
+    font-size: 10px;
+    color: var(--color-blue);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* ── Free Match Card ── */
+  .free-card {
+    margin: 0 14px 10px;
+    border: 1.5px solid var(--color-blue-border);
+    border-radius: 12px;
+    padding: 14px;
+    background: var(--color-bg);
+  }
+  .fc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .league-pill {
+    font-size: 11px;
+    background: var(--color-blue-light);
+    color: var(--color-blue-text);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .free-pill {
+    font-size: 11px;
+    background: var(--color-green-light);
+    color: var(--color-green-text);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .match-num {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+  }
+  .teams-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .team-name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .vs-badge {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .rec-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--color-border-light);
+    margin-top: 4px;
+  }
+  .rec-badge {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .rec-badge.home {
+    color: var(--color-red-text);
+    background: var(--color-red-light);
+  }
+  .rec-badge.draw {
+    color: var(--color-amber-text);
+    background: var(--color-amber-light);
+  }
+  .rec-badge.away {
+    color: var(--color-blue-text);
+    background: var(--color-blue-light);
+  }
+
+  /* ── Locked Match Cards ── */
+  .lcard-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 14px;
+    margin-bottom: 10px;
+  }
+  .lcard {
+    border: 0.5px solid var(--color-border);
+    border-radius: 10px;
+    padding: 12px;
+    background: var(--color-bg);
+  }
+  .lc-league {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+  }
+  .lc-teams {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .lc-blur-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+  .blur-text {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    filter: blur(4px);
+    user-select: none;
+  }
+  .lcard-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 0.5px solid var(--color-border-light);
+  }
+  .rec-blur {
+    font-size: 11px;
+    font-weight: 500;
+    filter: blur(4px);
+    user-select: none;
+  }
+
+  /* ── Unlock Bar ── */
+  .unlock-bar {
+    margin: 0 14px 10px;
+    background: var(--color-blue-light);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .ub-left {
+    font-size: 12px;
+    color: var(--color-blue-text);
+    line-height: 1.5;
+  }
+  .ub-left strong {
+    font-weight: 500;
+    display: block;
+    font-size: 14px;
+    color: var(--color-blue-text);
+  }
+  .ub-btn {
+    background: var(--color-blue);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: none;
+  }
+  .ub-btn:hover { opacity: 0.9; }
+
+  /* ── Hint ── */
+  .hint-bar {
+    margin: 0 14px 12px;
+    display: flex;
+    gap: 6px;
+    background: var(--color-amber-light);
+    border-left: 2px solid var(--color-amber);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 10px;
+  }
+  .hint-text {
+    font-size: 11px;
+    color: var(--color-amber-text);
+    line-height: 1.5;
+  }
+  .hint-text strong { font-weight: 500; }
+
+  /* ── Yesterday Matches ── */
+  .ym-container {
+    margin-bottom: 4px;
+  }
+  .ym-header {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 2px;
+  }
+  .ym-viewport {
+    overflow: hidden;
+    border: 0.5px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-bg);
+  }
+  .ym-viewport.ym-scroll {
+    height: 113px;
+  }
+  .ym-viewport.ym-scroll .ym-list {
+    animation: ym-scroll 20s linear infinite;
+  }
+  .ym-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .ym-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--color-border-light);
+    font-size: 12px;
+  }
+  .ym-row:last-child {
+    border-bottom: none;
+  }
+  .ym-league {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-secondary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ym-teams {
+    flex: 1;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ym-pred {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .ym-badges {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .pred-home {
+    color: #fff;
+    background: var(--color-red-text, #dc2626);
+  }
+  .pred-away {
+    color: #fff;
+    background: var(--color-blue);
+  }
+  .pred-draw {
+    color: #fff;
+    background: var(--color-amber-text, #d97706);
+  }
+  .pred-none {
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-secondary);
+  }
+
+  @keyframes ym-scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+
+  /* ── VIP Unlocked ── */
+  .vip-active .blur-text,
+  .vip-active .rec-blur {
+    filter: none !important;
+    user-select: auto !important;
+  }
+  .vip-active .ti-lock {
+    display: none !important;
+  }
 }
 
+/* ── Desktop Overrides ── */
+@media (min-width: 768px) {
+  .stat-card {
+    padding: 14px 18px;
+    border-radius: 12px;
+  }
+  .stat-eyebrow { font-size: 11px; }
+  .stat-number { font-size: 28px; }
+  .stat-subtitle { font-size: 12px; }
+  .srow { font-size: 11px; padding: 3px 0; }
+  .pill { font-size: 10px; padding: 2px 6px; }
+
+  .free-card {
+    padding: 20px;
+    margin: 0 0 14px;
+    border-radius: 14px;
+  }
+  .team-name { font-size: 18px; }
+
+  .lcard-wrap {
+    gap: 12px;
+    padding: 0;
+  }
+
+  .lcard {
+    padding: 16px;
+  }
+
+  .unlock-bar {
+    margin: 0 0 14px;
+    padding: 16px 20px;
+    border-radius: 14px;
+  }
+
+  .hint-bar {
+    margin: 0 0 14px;
+  }
+
+  .sec-header {
+    padding: 14px 0 10px;
+  }
+  .sec-title { font-size: 16px; }
+  .sec-badge { font-size: 12px; }
+
+  .pb-row { gap: 8px; }
+  .pb-label { font-size: 12px; width: 28px; }
+  .pb-track { height: 6px; }
+  .pb-pct { font-size: 12px; min-width: 36px; }
+}
+
+@media (min-width: 1024px) {
+  .lcard-wrap {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Utilities ── */
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+.hide-scrollbar::-webkit-scrollbar { display: none; }

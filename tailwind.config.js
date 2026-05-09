@@ -5,11 +5,11 @@ export default {
     extend: {
       colors: {
         deep: {
-          900: "#0a0a0f",
-          800: "#111118",
-          700: "#1a1a24",
-          600: "#242430",
-          500: "#2e2e3a",
+          900: "#f8f9fa",
+          800: "#ffffff",
+          700: "#f1f3f5",
+          600: "#e5e7eb",
+          500: "#d1d5db",
         },
         accent: {
           DEFAULT: "#6c5ce7",
@@ -20,13 +20,13 @@ export default {
           dim: "#00b894",
         },
         text: {
-          primary: "#e8e8ed",
-          secondary: "#888899",
-          muted: "#555566",
+          primary: "#1f2937",
+          secondary: "#4b5563",
+          muted: "#9ca3af",
         },
         card: {
-          border: "#2a2a38",
-          glow: "rgba(108, 92, 231, 0.08)",
+          border: "#e5e7eb",
+          glow: "rgba(108, 92, 231, 0.06)",
         },
       },
     },
