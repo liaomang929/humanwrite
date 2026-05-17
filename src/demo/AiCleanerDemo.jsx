@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
+import ProductCTA from '../components/ProductCTA'
 
 const platforms = [
   { key: 'general', label: '通用去AI味', icon: '✨' },
-  { key: 'academic', label: '学术降重', icon: '🎓' },
+  { key: 'academic', label: '学术润色', icon: '🎓' },
   { key: 'business', label: '商务润色', icon: '💼' },
   { key: 'social', label: '社交媒体', icon: '📱' },
 ]
@@ -21,8 +22,8 @@ export default function AiCleanerDemo() {
 
   usePageMeta({
     title: '净言 AI Cleaner — 让 AI 文本回归自然',
-    description: '净言 AI Cleaner 是一款去AI味工具，通过AI大模型去除AI生成文本的痕迹，让内容更自然、更像人类写作。支持通用去AI味、学术降重、商务润色、社交媒体口语化。',
-    keywords: '去AI味,AI Cleaner,降重,润色,AI文本,自然写作',
+    description: '净言 AI Cleaner 是一款文本润色工具，通过AI大模型优化文本表达，让内容更自然流畅。支持通用润色、学术润色、商务润色、社交媒体口语化。',
+    keywords: 'AI Cleaner,润色,AI文本,自然写作,表达优化',
   })
 
   const handleClean = async () => {
@@ -65,16 +66,16 @@ export default function AiCleanerDemo() {
   }
 
   const statsBar = result ? (
-    <div className="flex items-center gap-4 flex-wrap text-xs">
-      <span className="text-slate-400">
-        原文 <span className="text-stone-300 font-medium">{result.stats.origChars}</span> 字
+    <div className="flex items-center gap-2 sm:gap-4 text-xs">
+      <span className="text-slate-400 whitespace-nowrap">
+        原文 <span className="text-stone-300 font-medium">{result.stats.origChars}</span>
       </span>
-      <span className="text-slate-500">→</span>
-      <span className="text-slate-400">
-        处理后 <span className="text-emerald-400 font-medium">{result.stats.resultChars}</span> 字
+      <span className="text-slate-500 shrink-0">→</span>
+      <span className="text-slate-400 whitespace-nowrap">
+        处理后 <span className="text-emerald-400 font-medium">{result.stats.resultChars}</span>
       </span>
-      <span className="text-slate-600">·</span>
-      <span className={`font-medium ${result.stats.reduction < 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+      <span className="text-slate-600 shrink-0 hidden sm:inline">·</span>
+      <span className={`font-medium whitespace-nowrap ${result.stats.reduction < 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
         {result.stats.reduction < 0 ? '+' : ''}{result.stats.reduction}%
       </span>
     </div>
@@ -83,21 +84,21 @@ export default function AiCleanerDemo() {
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col">
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-6 h-14 border-b border-slate-800 shrink-0 bg-[#0f172a]/90 backdrop-blur-md">
-        <div className="flex items-center gap-4">
+      <header className="flex items-center justify-between px-3 sm:px-6 h-14 border-b border-slate-800 shrink-0 bg-[#0f172a]/90 backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <button
             onClick={() => navigate('/')}
-            className="text-slate-400 hover:text-stone-200 text-sm transition-colors"
+            className="text-slate-400 hover:text-stone-200 text-sm transition-colors shrink-0"
           >
             ← 返回
           </button>
-          <div className="w-px h-5 bg-slate-800" />
-          <div className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-xs font-bold">净</span>
-            <span className="font-semibold text-sm">净言 AI Cleaner — 去AI味工具</span>
+          <div className="w-px h-5 bg-slate-800 shrink-0" />
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-xs font-bold shrink-0">净</span>
+            <span className="font-semibold text-sm truncate">净言 AI Cleaner<span className="hidden sm:inline"> — 去AI味工具</span></span>
           </div>
         </div>
-        <div>
+        <div className="shrink-0">
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">体验模式</span>
         </div>
       </header>
@@ -163,12 +164,12 @@ export default function AiCleanerDemo() {
           {/* Output Area */}
           {result && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                   <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">处理结果</label>
                   {statsBar}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-end sm:self-auto">
                   <button
                     onClick={() => setShowCompare(!showCompare)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-all ${
@@ -210,6 +211,10 @@ export default function AiCleanerDemo() {
           )}
         </div>
       </main>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 pb-12">
+        <ProductCTA productName="净言 AI Cleaner" description="净言 AI Cleaner 免费使用，如有个性化需求调整，联系我" note="「净言」" />
+      </div>
     </div>
   )
 }

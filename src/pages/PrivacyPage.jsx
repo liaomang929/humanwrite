@@ -17,8 +17,6 @@ export default function PrivacyPage() {
             <h2 className="font-medium text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>一、信息收集</h2>
             <p>在使用本平台服务过程中，我们可能会收集以下类型的信息：</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li><strong>手机号码：</strong>当您开通会员时，需要提供手机号码用于身份验证和服务授权</li>
-              <li><strong>支付信息：</strong>会员开通时的支付记录（本平台使用微信支付，不存储您的银行卡或支付密码信息）</li>
               <li><strong>浏览数据：</strong>页面访问记录、设备类型、浏览器版本等基本访问日志</li>
             </ul>
           </section>
@@ -27,7 +25,6 @@ export default function PrivacyPage() {
             <h2 className="font-medium text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>二、信息使用</h2>
             <p>我们收集的信息仅用于以下目的：</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li>验证会员身份并开通相应服务权限</li>
               <li>优化平台功能和服务体验</li>
               <li>统计平台使用情况（匿名化处理）</li>
               <li>处理用户反馈和提供服务支持</li>
@@ -37,6 +34,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-medium text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>三、信息存储与保护</h2>
             <p>我们采取合理的技术措施保护您的个人信息安全，包括但不限于数据加密传输、服务器访问控制等。您的个人信息存储在中国境内的服务器上，我们将持续维护这些安全措施。</p>
+            <p className="mt-2">当您使用"净言"文本处理功能时，您提交的文本内容将发送至第三方AI服务商（DeepSeek）进行处理。处理过程为实时调用，我们不会在本地服务器上存储您提交的文本内容及处理结果。第三方服务商的数据处理受其自身隐私政策约束。</p>
             <p className="mt-2">尽管有上述措施，互联网环境下的数据传输和存储无法保证绝对安全，我们将尽最大努力保护您的信息。</p>
           </section>
 

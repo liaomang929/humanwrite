@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 const defaults = {
   title: 'HumanWrite — 产品矩阵',
-  description: 'HumanWrite 产品矩阵：球之见（体育分析管理工具）与典萃 ClassiCore（AI 深度阅读伴侣）。逻辑驱动 · 技术赋能 · 工业级稳固。',
+  description: 'HumanWrite 产品矩阵：典萃 ClassiCore（AI 深度阅读伴侣）与净言（AI 文本润色工具）。逻辑驱动 · 技术赋能。',
   keywords: 'HumanWrite,球之见,典萃,ClassiCore,体育分析,AI阅读,知识胶囊,自媒体创作',
 }
 

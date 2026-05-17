@@ -4,32 +4,52 @@ export default {
   theme: {
     extend: {
       colors: {
-        deep: {
-          900: "#f8f9fa",
-          800: "#ffffff",
-          700: "#f1f3f5",
-          600: "#e5e7eb",
-          500: "#d1d5db",
+        midnight: {
+          900: "#080c16",
+          800: "#0d1321",
+          700: "#111827",
+          600: "#1a2236",
+          500: "#243047",
         },
-        accent: {
-          DEFAULT: "#6c5ce7",
-          light: "#a29bfe",
+        gold: {
+          DEFAULT: "#c9a84c",
+          light: "#e8d48b",
+          dark: "#a8882e",
         },
-        cyan: {
-          DEFAULT: "#00cec9",
-          dim: "#00b894",
+        surface: {
+          DEFAULT: "#111827",
+          hover: "#1a2236",
+          border: "rgba(255,255,255,0.06)",
+          "border-hover": "rgba(255,255,255,0.12)",
         },
         text: {
-          primary: "#1f2937",
-          secondary: "#4b5563",
-          muted: "#9ca3af",
+          primary: "#f1f5f9",
+          secondary: "#94a3b8",
+          tertiary: "#64748b",
         },
-        card: {
-          border: "#e5e7eb",
-          glow: "rgba(108, 92, 231, 0.06)",
+        brand: {
+          blue: "#3b82f6",
+          cyan: "#06b6d4",
+          emerald: "#10b981",
+          amber: "#f59e0b",
+          rose: "#f43f5e",
+          indigo: "#6366f1",
         },
+      },
+      fontFamily: {
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"SF Pro Display"',
+          '"Noto Sans SC"',
+          '"PingFang SC"',
+          "system-ui",
+          "sans-serif",
+        ],
+        mono: ['"JetBrains Mono"', '"SF Mono"', "ui-monospace", "monospace"],
       },
     },
   },
   plugins: [],
-}
+};

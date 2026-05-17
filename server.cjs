@@ -1,16 +1,17 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 const { Pool } = require('pg');
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 // ── PostgreSQL ──────────────────────────────────────────────
 const pool = new Pool({
-  host: '127.0.0.1',
-  port: 5432,
-  user: 'logiclens_user',
-  password: 'L0gicLens2026',
-  database: 'logiclens',
+  host: process.env.DB_HOST || '127.0.0.1',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  user: process.env.DB_USER || 'logiclens_user',
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME || 'logiclens',
 });
 
 // Try dates in order, return results from the first date that has data
@@ -193,57 +194,6 @@ http.createServer((req, res) => {
         if (fallback) doPrecomputedQuery(fallback, lk, res, () => json(res, { predictions: {} }));
         else json(res, { predictions: {} });
       });
-      return;
-    }
-
-    // ── VIP endpoints ────────────────────────────────────
-    // GET /api/logiclens/vip/status?phone=xxx
-    if (p === '/api/logiclens/vip/status') {
-      const phone = u.searchParams.get('phone');
-      if (!phone) { json(res, { error: 'phone required' }, 400); return; }
-      pool.query('SELECT expires_at FROM vip_users WHERE phone=$1 AND active=true AND expires_at > NOW()', [phone])
-        .then(r => {
-          if (r.rows.length) json(res, { vip: true, expires_at: r.rows[0].expires_at });
-          else json(res, { vip: false });
-        })
-        .catch(e => { console.error('DB error /vip/status:', e.message); json(res, { vip: false }); });
-      return;
-    }
-
-    // GET /api/logiclens/vip/list
-    if (p === '/api/logiclens/vip/list') {
-      pool.query('SELECT id, phone, remark, activated_at, expires_at, active FROM vip_users ORDER BY id DESC')
-        .then(r => json(res, { users: r.rows }))
-        .catch(e => { console.error('DB error /vip/list:', e.message); json(res, { users: [] }); });
-      return;
-    }
-
-    // POST /api/logiclens/vip/activate
-    if (p === '/api/logiclens/vip/activate' && req.method === 'POST') {
-      let body = '';
-      req.on('data', c => body += c);
-      req.on('end', () => {
-        try {
-          const { phone, days, remark } = JSON.parse(body);
-          if (!phone || !days) { json(res, { error: 'phone and days required' }, 400); return; }
-          const expiresAt = new Date(Date.now() + days * 86400000).toISOString();
-          pool.query(
-            'INSERT INTO vip_users (phone, remark, expires_at) VALUES ($1, $2, $3) ON CONFLICT (phone) DO UPDATE SET expires_at=$3, active=true, remark=COALESCE($2, vip_users.remark), activated_at=NOW()',
-            [phone, remark || null, expiresAt]
-          ).then(() => { json(res, { ok: true, expires_at: expiresAt }); })
-           .catch(e => { console.error('DB error /vip/activate:', e.message); json(res, { error: e.message }, 500); });
-        } catch (e) { json(res, { error: 'invalid json' }, 400); }
-      });
-      return;
-    }
-
-    // GET /api/logiclens/vip/deactivate?phone=xxx
-    if (p === '/api/logiclens/vip/deactivate') {
-      const phone = u.searchParams.get('phone');
-      if (!phone) { json(res, { error: 'phone required' }, 400); return; }
-      pool.query('UPDATE vip_users SET active=false WHERE phone=$1', [phone])
-        .then(() => json(res, { ok: true }))
-        .catch(e => { console.error('DB error /vip/deactivate:', e.message); json(res, { error: e.message }, 500); });
       return;
     }
 
