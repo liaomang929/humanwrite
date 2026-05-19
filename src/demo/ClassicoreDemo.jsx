@@ -189,7 +189,7 @@ export default function ClassicoreDemo() {
           </div>
         </div>
 
-        {/* Description */}
+        {/* Feature cards */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="rounded-xl p-4" style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)' }}>
             <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>📄 PDF 拆解</div>
@@ -205,8 +205,93 @@ export default function ClassicoreDemo() {
           </div>
         </div>
 
+        {/* ═══ SaaS 入口区块 ═══ */}
+        <div
+          className="mt-10 rounded-2xl overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, rgba(78,207,179,0.08) 0%, rgba(56,189,248,0.06) 100%)',
+            border: '1px solid rgba(78,207,179,0.25)',
+            position: 'relative',
+          }}
+        >
+          {/* 顶部光晕装饰 */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+            background: 'linear-gradient(90deg, transparent, rgba(78,207,179,0.6), transparent)',
+          }} />
+
+          <div className="px-6 sm:px-8 py-7 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {/* 左侧文案 */}
+            <div className="flex items-start gap-4 flex-1 min-w-0">
+              {/* 图标 */}
+              <div style={{
+                width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                background: 'rgba(78,207,179,0.15)',
+                border: '1px solid rgba(78,207,179,0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22,
+              }}>
+                🚀
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
+                    正式版已上线，立即体验
+                  </span>
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                    color: '#4ecfb3', background: 'rgba(78,207,179,0.15)',
+                    border: '1px solid rgba(78,207,179,0.3)',
+                    padding: '2px 8px', borderRadius: 100,
+                  }}>
+                    SaaS · 对外开放
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                  典萃拆书 SaaS 版现已开放，上传 PDF 即可自动拆解，生成多平台创作脚本。
+                </p>
+              </div>
+            </div>
+
+            {/* 右侧按钮 */}
+            <a
+              href="http://8.163.73.185:5073"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '11px 24px',
+                background: 'rgba(78,207,179,0.18)',
+                border: '1px solid rgba(78,207,179,0.45)',
+                borderRadius: 100,
+                color: '#4ecfb3',
+                fontSize: 14, fontWeight: 600,
+                textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(78,207,179,0.28)'
+                e.currentTarget.style.borderColor = 'rgba(78,207,179,0.7)'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(78,207,179,0.2)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(78,207,179,0.18)'
+                e.currentTarget.style.borderColor = 'rgba(78,207,179,0.45)'
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              进入产品
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17L17 7M7 7h10v10" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
         {/* CTA */}
-        <div className="mt-12">
+        <div className="mt-8">
           <ProductCTA productName="典萃【自媒体拆书工具】" note="「典萃拆书」" />
         </div>
       </div>
