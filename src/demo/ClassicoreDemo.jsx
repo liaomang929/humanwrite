@@ -126,7 +126,7 @@ export default function ClassicoreDemo() {
             playsInline
             preload="auto"
           >
-            <source src="/11.mp4" type="video/mp4" />
+            <source src="/2222.mp4" type="video/mp4" />
             您的浏览器不支持视频播放
           </video>
 
