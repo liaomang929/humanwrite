@@ -79,6 +79,27 @@ const PRODUCTS = [
     ),
   },
   {
+    id: 'lottery',
+    title: '我中奖了吗？',
+    subtitle: 'Lottery Check',
+    tagline: '拍一张，等天意',
+    description:
+      '彩票中奖查询工具。支持大乐透、双色球，录入号码即可对照官方开奖数据批量核验，还可拍照识别号码。',
+    tags: ['大乐透', '双色球', '开奖查询'],
+    href: '/lottery/',
+    accentColor: '#e86c9a',
+    status: '可用',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="8" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="16" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <path d="M3 9h18" />
+      </svg>
+    ),
+  },
+  {
     id: 'shangan',
     title: '上岸雷达',
     subtitle: 'Gongkao Radar',
@@ -114,7 +135,7 @@ const CATEGORIES = [
     title: '工具类',
     tag: 'Tools',
     description: '提升内容创作与信息处理效率',
-    productIds: ['classicore', 'aicleaner'],
+    productIds: ['classicore', 'aicleaner', 'lottery'],
   },
   {
     id: 'exam',
@@ -455,8 +476,8 @@ export default function PortalPage() {
   usePageMeta({
     title: 'Blake Pierce — 独立开发者 / 数据爱好者',
     description:
-      '个人产品门户：逻辑透镜、典萃 ClassiCore、净言 AI Cleaner、上岸雷达、私域粉丝投票。',
-    keywords: 'Blake Pierce,廖莽,LogicLens,数据实验室,典萃,ClassiCore,净言,上岸雷达,私域粉丝投票',
+      '个人产品门户：逻辑透镜、典萃 ClassiCore、净言 AI Cleaner、我中奖了吗、上岸雷达、私域粉丝投票。',
+    keywords: 'Blake Pierce,廖莽,LogicLens,数据实验室,典萃,ClassiCore,净言,我中奖了吗,大乐透,双色球,上岸雷达,私域粉丝投票',
   })
 
   return (
@@ -498,7 +519,7 @@ export default function PortalPage() {
         {/* STATS */}
         <div className="bp-stats">
           {[
-            { num: '5', lbl: '在线产品' },
+            { num: '6', lbl: '在线产品' },
             { num: '5+', lbl: '覆盖领域' },
             { num: '每日', lbl: '数据更新' },
             { num: '开放', lbl: '数据透明' },
