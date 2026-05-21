@@ -62,39 +62,18 @@ export default function FansVoteDemo() {
       {/* Header */}
       <header className="glass-header sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 sm:px-10">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-3 no-underline">
-              <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 8,
-                  background: 'linear-gradient(135deg, var(--gold), var(--gold-dark))',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#080c16',
-                }}
-              >
-                B
-              </div>
-              <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
+          <div className="flex items-center justify-between h-14">
+            <div className="flex items-center gap-3">
+              <Link to="/" className="flex items-center gap-2 no-underline" style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f0876c', boxShadow: '0 0 10px rgba(240,135,108,.4)', flexShrink: 0 }} />
                 Blake Pierce
-              </span>
-            </Link>
-
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm"
-              style={{ color: 'var(--text-tertiary)' }}
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
-              返回首页
-            </Link>
+              </Link>
+              <span style={{ width: 1, height: 16, background: 'var(--border)' }} />
+              <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>私域粉丝投票</span>
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: '#f0876c', border: '1px solid rgba(240,135,108,.28)', padding: '3px 10px', borderRadius: 100 }}>
+              实时更新
+            </span>
           </div>
         </div>
       </header>

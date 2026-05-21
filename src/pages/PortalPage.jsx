@@ -25,22 +25,47 @@ const PRODUCTS = [
     ),
   },
   {
-    id: 'shangan',
-    title: '上岸雷达',
-    subtitle: 'Gongkao Radar',
-    tagline: '考公岗位智能匹配',
+    id: 'lottery',
+    title: '我中奖了吗？',
+    subtitle: 'Lottery Check',
+    tagline: '拍一张，等天意',
     description:
-      '公务员考试岗位智能匹配与信息查询。精准筛选目标岗位，提升备考效率。',
-    tags: ['考公', '岗位匹配'],
-    href: '/kg',
-    accentColor: '#6cb4f0',
-    status: '持续更新',
+      '彩票中奖查询工具。支持大乐透、双色球，录入号码即可批量核验。',
+    tags: ['大乐透', '双色球'],
+    href: '/lottery/',
+    accentColor: '#e86c9a',
+    status: '免费可用',
     bento: 'tall',
-    preview: 'job-search',
+    preview: 'lottery-balls',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l2.5 6.5L21 11l-6.5 3L12 22l-2.5-8L3 11l6.5-2.5z" />
-        <circle cx="12" cy="11" r="2" />
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="8" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="16" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <path d="M3 9h18" />
+      </svg>
+    ),
+  },
+  {
+    id: 'jczq',
+    title: '私域粉丝投票',
+    subtitle: 'Fans Vote',
+    tagline: '比赛分享和私域投票',
+    description:
+      '比赛分享和私域投票数据收集，了解粉丝热度与倾向。',
+    tags: ['粉丝投票', '赛事热度'],
+    href: '/demo/fansvote',
+    accentColor: '#f0876c',
+    status: '实时更新',
+    bento: 'wide',
+    preview: 'vote-poll',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+        <path d="M7 3l-1 4 4-1" />
+        <path d="M17 3l1 4-4-1" />
       </svg>
     ),
   },
@@ -48,7 +73,7 @@ const PRODUCTS = [
     id: 'classicore',
     title: '典萃',
     subtitle: 'ClassiCore',
-    tagline: 'AI 深度阅读伴侣',
+    tagline: '解构每一本好书，让知识成为你的创作源力',
     description:
       '上传 PDF 自动拆解，生成知识胶囊，一键输出多平台创作脚本。',
     tags: ['知识胶囊', '深度拆解'],
@@ -87,53 +112,28 @@ const PRODUCTS = [
     ),
   },
   {
-    id: 'lottery',
-    title: '我中奖了吗？',
-    subtitle: 'Lottery Check',
-    tagline: '拍一张，等天意',
+    id: 'shangan',
+    title: '上岸雷达',
+    subtitle: 'Gongkao Radar',
+    tagline: '考公岗位智能匹配',
     description:
-      '彩票中奖查询工具。支持大乐透、双色球，录入号码即可批量核验。',
-    tags: ['大乐透', '双色球'],
-    href: '/lottery/',
-    accentColor: '#e86c9a',
-    status: '可用',
+      '公务员考试岗位智能匹配与信息查询。精准筛选目标岗位，提升备考效率。',
+    tags: ['考公', '岗位匹配'],
+    href: '/kg',
+    accentColor: '#6cb4f0',
+    status: '持续更新',
     bento: 'normal',
-    preview: 'lottery-balls',
+    preview: 'job-search',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <circle cx="8" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="16" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <path d="M3 9h18" />
-      </svg>
-    ),
-  },
-  {
-    id: 'jczq',
-    title: '私域粉丝投票',
-    subtitle: 'Fans Vote',
-    tagline: '比赛分享和私域投票',
-    description:
-      '比赛分享和私域投票数据收集，了解粉丝热度与倾向。',
-    tags: ['粉丝投票', '赛事热度'],
-    href: '/demo/fansvote',
-    accentColor: '#f0876c',
-    status: '实时更新',
-    bento: 'wide',
-    preview: 'vote-poll',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-        <path d="M7 3l-1 4 4-1" />
-        <path d="M17 3l1 4-4-1" />
+        <path d="M12 2l2.5 6.5L21 11l-6.5 3L12 22l-2.5-8L3 11l6.5-2.5z" />
+        <circle cx="12" cy="11" r="2" />
       </svg>
     ),
   },
 ]
 
-const SPOTLIGHT_ORDER = ['logiclens', 'shangan', 'classicore', 'aicleaner', 'lottery', 'jczq']
+const SPOTLIGHT_ORDER = ['logiclens', 'lottery', 'jczq', 'classicore', 'aicleaner', 'shangan']
 const SPOTLIGHT_PRODUCTS = SPOTLIGHT_ORDER.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean)
 
 const STYLES = `
@@ -203,17 +203,26 @@ const STYLES = `
   }
   .bp-nav-links a:hover { color: var(--bp-primary); }
 
-  /* spotlight hero */
-  .bp-spotlight {
+  /* first screen: hero + manifesto */
+  .bp-first-screen {
     min-height: 100vh;
     max-width: 1200px; margin: 0 auto;
-    padding: calc(56px + clamp(3rem,8vw,6rem)) clamp(1.25rem,4vw,3.5rem) clamp(2rem,5vw,4rem);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: calc(56px + clamp(1.25rem, 3vw, 2.5rem)) clamp(1.25rem,4vw,3.5rem) clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  /* spotlight hero */
+  .bp-spotlight {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    padding: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(2rem,5vw,4rem);
+    gap: clamp(1.5rem, 4vw, 3rem);
     align-items: center;
   }
-  .bp-spotlight-copy { position: relative; min-height: 280px; }
+  .bp-spotlight-copy { position: relative; min-height: 240px; }
   .bp-spotlight-slide {
     position: absolute; inset: 0;
     display: flex; flex-direction: column; justify-content: center;
@@ -240,7 +249,7 @@ const STYLES = `
   }
   .bp-sp-tagline {
     font-size: clamp(1rem,2vw,1.2rem); color: var(--bp-secondary);
-    font-weight: 300; line-height: 1.6; margin-bottom: 2rem; max-width: 420px;
+    font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem; max-width: 420px;
   }
   .bp-sp-cta {
     display: inline-flex; align-items: center; gap: 8px;
@@ -254,7 +263,7 @@ const STYLES = `
     box-shadow: 0 12px 32px color-mix(in srgb, var(--_accent, var(--bp-accent)) 35%, transparent);
   }
   .bp-sp-dots {
-    display: flex; gap: 8px; margin-top: 2.5rem;
+    display: flex; gap: 8px; margin-top: 1.75rem;
   }
   .bp-sp-dot {
     width: 8px; height: 8px; border-radius: 50%;
@@ -289,9 +298,10 @@ const STYLES = `
 
   /* manifesto */
   .bp-manifesto {
-    max-width: 1200px; margin: 0 auto;
-    padding: clamp(3rem,8vw,6rem) clamp(1.25rem,4vw,3.5rem);
+    width: 100%;
+    padding: clamp(1.25rem, 3vw, 2rem) 0 0;
     text-align: center;
+    flex-shrink: 0;
   }
   .bp-manifesto-text {
     font-family: var(--bp-display);
@@ -403,6 +413,24 @@ const STYLES = `
     display: flex; flex-direction: column; gap: 5px;
   }
   .bp-mock-book-line { height: 4px; border-radius: 2px; background: rgba(255,255,255,.08); }
+  .bp-mock-platforms {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    padding: 1.5rem;
+  }
+  .bp-mock-platform-row {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+  }
+  .bp-mock-platform {
+    font-family: var(--bp-display);
+    font-size: clamp(13px, 1.8vw, 16px);
+    font-weight: 600; letter-spacing: -.02em;
+    padding: 8px 16px; border-radius: 100px;
+    color: var(--bp-primary);
+    background: rgba(255,255,255,.05);
+    border: 1px solid color-mix(in srgb, var(--_accent) 35%, transparent);
+  }
   .bp-mock-balls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; height: 100%; }
   .bp-mock-ball {
     width: 32px; height: 32px; border-radius: 50%;
@@ -483,8 +511,9 @@ const STYLES = `
   .bp-nav { animation: bp-up .6s var(--bp-ease) both; }
 
   @media (max-width: 900px) {
-    .bp-spotlight { grid-template-columns: 1fr; min-height: auto; }
-    .bp-spotlight-copy { min-height: 240px; }
+    .bp-first-screen { min-height: 100svh; justify-content: flex-start; padding-top: calc(56px + 1rem); }
+    .bp-spotlight { grid-template-columns: 1fr; }
+    .bp-spotlight-copy { min-height: 220px; }
     .bp-spotlight-visual { aspect-ratio: 16/10; }
     .bp-bento > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
     .bp-bento-card.bp-bento-hero .bp-bento-preview,
@@ -533,15 +562,10 @@ function ProductPreview({ type, accentColor }) {
       )
     case 'book-reader':
       return (
-        <div className="bp-mock bp-mock-books" style={style}>
-          <div className="bp-mock-book">
-            {[100, 80, 90, 60].map((w, i) => (
-              <div key={i} className="bp-mock-book-line" style={{ width: `${w}%` }} />
-            ))}
-          </div>
-          <div className="bp-mock-book">
-            {[70, 100, 85].map((w, i) => (
-              <div key={i} className="bp-mock-book-line" style={{ width: `${w}%`, background: i === 0 ? `color-mix(in srgb, ${accentColor} 40%, transparent)` : undefined }} />
+        <div className="bp-mock bp-mock-platforms" style={style}>
+          <div className="bp-mock-platform-row">
+            {['小红书', '抖音', '公众号'].map(p => (
+              <span key={p} className="bp-mock-platform">{p}</span>
             ))}
           </div>
         </div>
@@ -664,7 +688,8 @@ export default function PortalPage() {
           </div>
         </header>
 
-        {/* SPOTLIGHT HERO */}
+        {/* FIRST SCREEN: SPOTLIGHT + MANIFESTO */}
+        <div className="bp-first-screen">
         <section
           className="bp-spotlight"
           onMouseEnter={() => setPaused(true)}
@@ -717,6 +742,7 @@ export default function PortalPage() {
             6 个工具，1 个目标：<br />让数据和技术，<em>真正有用</em>
           </p>
         </div>
+        </div>
 
         {/* BENTO PRODUCTS */}
         <main id="products" className="bp-section" style={{ scrollMarginTop: '72px' }}>
@@ -758,6 +784,10 @@ export default function PortalPage() {
               <span style={{ color: 'var(--bp-muted)', fontSize: 10 }}>·</span>
               <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
                 鄂ICP备2026022715号
+              </a>
+              <span style={{ color: 'var(--bp-muted)', fontSize: 10 }}>·</span>
+              <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42011102006235" target="_blank" rel="noopener noreferrer">
+                鄂公网安备42011102006235号
               </a>
             </div>
           </footer>

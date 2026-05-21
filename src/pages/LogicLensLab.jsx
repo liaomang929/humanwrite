@@ -83,28 +83,19 @@ const CSS = `
     padding: 0 clamp(1rem,4vw,2.5rem);
     height: 60px; display: flex; align-items: center; justify-content: space-between;
   }
-  .ll-logo {
+  .ll-nav-brand { display: flex; align-items: center; gap: 12px; }
+  .ll-site-logo {
     display: flex; align-items: center; gap: 9px;
-    text-decoration: none;
-  }
-  .ll-logo-icon {
-    width: 30px; height: 30px; border-radius: 9px;
-    background: linear-gradient(135deg, #7c6ef0, #4ecfb3);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .ll-logo-icon svg { width: 14px; height: 14px; }
-  .ll-logo-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px; font-weight: 700; letter-spacing: -.02em;
+    text-decoration: none; font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; letter-spacing: -.02em;
     color: var(--text-primary, #f0eeff);
   }
-  .ll-logo-sub {
-    font-size: 10px; color: rgba(139,133,168,.6);
-    letter-spacing: .06em; text-transform: uppercase;
-    border-left: 1px solid rgba(255,255,255,.1);
-    padding-left: 9px; margin-left: 2px;
+  .ll-site-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #7c6ef0;
+    box-shadow: 0 0 10px rgba(124,110,240,.4); flex-shrink: 0;
   }
+  .ll-nav-div { width: 1px; height: 16px; background: rgba(255,255,255,.1); }
+  .ll-product-name { font-size: 13px; color: rgba(139,133,168,.75); font-weight: 400; }
   .ll-nav-links { display: flex; align-items: center; gap: 2px; }
   .ll-nav-btn {
     background: none; border: none; cursor: pointer;
@@ -114,14 +105,6 @@ const CSS = `
     transition: color .2s, background .2s;
   }
   .ll-nav-btn:hover { color: var(--text-primary, #f0eeff); background: rgba(255,255,255,.05); }
-  .ll-back {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 6px 12px; border-radius: 8px;
-    font-size: 13px; color: rgba(139,133,168,.6);
-    text-decoration: none;
-    transition: color .2s, background .2s;
-  }
-  .ll-back:hover { color: var(--text-primary, #f0eeff); background: rgba(255,255,255,.05); }
   .ll-mobile-menu-btn {
     display: none;
     background: none; border: none; cursor: pointer;
@@ -134,7 +117,6 @@ const CSS = `
   @media (max-width: 768px) {
     .ll-nav-links.desktop { display: none; }
     .ll-mobile-menu-btn { display: flex; }
-    .ll-logo-sub { display: none; }
   }
   .ll-mobile-menu {
     overflow: hidden; transition: max-height .28s ease;
@@ -658,17 +640,14 @@ export default function LogicLensLab() {
         {/* ── NAV ── */}
         <header className="ll-nav">
           <div className="ll-nav-inner">
-            <Link to="/" className="ll-logo">
-              <div className="ll-logo-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="2.5" />
-                  <circle cx="12" cy="12" r="8.5" />
-                  <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-                </svg>
-              </div>
-              <span className="ll-logo-text">逻辑透镜</span>
-              <span className="ll-logo-sub">LogicLens Lab</span>
-            </Link>
+            <div className="ll-nav-brand">
+              <Link to="/" className="ll-site-logo">
+                <span className="ll-site-dot" />
+                Blake Pierce
+              </Link>
+              <span className="ll-nav-div" />
+              <span className="ll-product-name">逻辑透镜</span>
+            </div>
 
             <nav className="ll-nav-links desktop">
               {NAV_ITEMS.map((item) => (
@@ -676,12 +655,6 @@ export default function LogicLensLab() {
                   {item.label}
                 </button>
               ))}
-              <Link to="/" className="ll-back">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                返回首页
-              </Link>
             </nav>
 
             <button
@@ -709,9 +682,6 @@ export default function LogicLensLab() {
                   {item.label}
                 </button>
               ))}
-              <Link to="/" className="ll-mobile-item" style={{ textDecoration: 'none' }}>
-                ← 返回首页
-              </Link>
             </div>
           </div>
         </header>

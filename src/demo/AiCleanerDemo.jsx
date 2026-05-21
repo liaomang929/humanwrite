@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { usePageMeta } from '../hooks/usePageMeta'
 import ProductCTA from '../components/ProductCTA'
 
@@ -41,30 +41,17 @@ const CSS = `
     position: sticky; top: 0; z-index: 50; flex-shrink: 0;
   }
   .ac-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .ac-back {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: none; border: none; cursor: pointer;
-    font-size: 13px; color: rgba(139,133,168,.7);
-    font-family: 'DM Sans', sans-serif;
-    padding: 5px 8px; border-radius: 8px;
-    transition: color .2s, background .2s; flex-shrink: 0;
+  .ac-site-logo {
+    display: flex; align-items: center; gap: 9px; min-width: 0;
+    text-decoration: none; font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; letter-spacing: -.02em; color: #e8e4ff;
   }
-  .ac-back:hover { color: #e8e4ff; background: rgba(255,255,255,.06); }
-  .ac-back svg { width: 13px; height: 13px; }
-  .ac-divider { width: 1px; height: 18px; background: rgba(255,255,255,.09); flex-shrink: 0; }
-  .ac-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
-  .ac-brand-icon {
-    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
-    background: linear-gradient(135deg, #4ecfb3, #7c6ef0);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700; color: #fff;
-    font-family: 'Syne', sans-serif;
+  .ac-site-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #4ecfb3;
+    box-shadow: 0 0 10px rgba(78,207,179,.35); flex-shrink: 0;
   }
-  .ac-brand-name {
-    font-size: 14.5px; font-weight: 600; color: #e8e4ff;
-    font-family: 'Syne', sans-serif; letter-spacing: -.01em;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+  .ac-nav-div { width: 1px; height: 16px; background: rgba(255,255,255,.09); flex-shrink: 0; }
+  .ac-product-name { font-size: 13px; color: rgba(139,133,168,.75); font-weight: 400; white-space: nowrap; }
   .ac-badge {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 3px 10px; border-radius: 100px;
@@ -272,7 +259,6 @@ const CSS = `
 `
 
 export default function AiCleanerDemo() {
-  const navigate = useNavigate()
   const [text, setText] = useState('')
   const [platform, setPlatform] = useState('general')
   const [loading, setLoading] = useState(false)
@@ -329,17 +315,12 @@ export default function AiCleanerDemo() {
         {/* ── HEADER ── */}
         <header className="ac-header">
           <div className="ac-header-left">
-            <button className="ac-back" onClick={() => navigate('/')}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
-              返回
-            </button>
-            <div className="ac-divider" />
-            <div className="ac-brand">
-              <div className="ac-brand-icon">净</div>
-              <span className="ac-brand-name">净言 AI Cleaner</span>
-            </div>
+            <Link to="/" className="ac-site-logo">
+              <span className="ac-site-dot" />
+              Blake Pierce
+            </Link>
+            <div className="ac-nav-div" />
+            <span className="ac-product-name">净言</span>
           </div>
           <div className="ac-badge">免费体验</div>
         </header>

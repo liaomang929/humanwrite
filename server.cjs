@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config();
 const { Pool } = require('pg');
 const port = process.env.PORT || 8080;
@@ -102,6 +103,144 @@ function isBefore1130() {
   return h < 11 || (h === 11 && mi < 30);
 }
 
+// ── Analytics ───────────────────────────────────────────────
+const ANALYTICS_INIT_SQL = `
+CREATE TABLE IF NOT EXISTS page_views (
+  id BIGSERIAL PRIMARY KEY,
+  path VARCHAR(512) NOT NULL,
+  visitor_hash VARCHAR(64) NOT NULL,
+  user_agent TEXT,
+  referer TEXT,
+  viewed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_page_views_viewed_at ON page_views (viewed_at);
+CREATE INDEX IF NOT EXISTS idx_page_views_path ON page_views (path);
+CREATE INDEX IF NOT EXISTS idx_page_views_visitor ON page_views (visitor_hash, viewed_at);
+`;
+
+pool.query(ANALYTICS_INIT_SQL)
+  .then(() => console.log('Analytics table ready'))
+  .catch(e => console.error('Analytics init error:', e.message));
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', () => resolve(Buffer.concat(chunks).toString()));
+    req.on('error', reject);
+  });
+}
+
+function clientIp(req) {
+  const xf = req.headers['x-forwarded-for'];
+  if (xf) return xf.split(',')[0].trim();
+  return req.socket.remoteAddress || '';
+}
+
+function isBot(ua) {
+  if (!ua) return true;
+  return /bot|crawl|spider|slurp|mediapartners|facebookexternalhit|bingpreview|headless/i.test(ua);
+}
+
+function shanghaiDateStr(d = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(d);
+}
+
+function visitorHash(ip, ua) {
+  const salt = process.env.ANALYTICS_SALT || process.env.ANALYTICS_SECRET || 'bp-default-salt';
+  const day = shanghaiDateStr();
+  return crypto.createHash('sha256').update(`${ip}|${day}|${ua || ''}|${salt}`).digest('hex').slice(0, 32);
+}
+
+function analyticsKeyOk(u) {
+  const key = u.searchParams.get('key');
+  return key && process.env.ANALYTICS_SECRET && key === process.env.ANALYTICS_SECRET;
+}
+
+async function recordPageView(req, res) {
+  try {
+    const ua = req.headers['user-agent'] || '';
+    if (isBot(ua)) { json(res, { ok: true, skipped: 'bot' }); return; }
+
+    let body = {};
+    try { body = JSON.parse(await readBody(req) || '{}'); } catch { body = {}; }
+    let pagePath = typeof body.path === 'string' ? body.path : '/';
+    if (!pagePath.startsWith('/')) pagePath = '/' + pagePath;
+    if (pagePath.length > 512) pagePath = pagePath.slice(0, 512);
+    if (pagePath === '/stats') { json(res, { ok: true, skipped: 'stats' }); return; }
+
+    const ip = clientIp(req);
+    const vHash = visitorHash(ip, ua);
+    const referer = (req.headers.referer || '').slice(0, 1024);
+
+    await pool.query(
+      'INSERT INTO page_views (path, visitor_hash, user_agent, referer) VALUES ($1, $2, $3, $4)',
+      [pagePath, vHash, ua.slice(0, 512), referer || null],
+    );
+    json(res, { ok: true });
+  } catch (e) {
+    console.error('Analytics record error:', e.message);
+    json(res, { ok: false }, 500);
+  }
+}
+
+async function analyticsStats(req, res, u) {
+  if (!analyticsKeyOk(u)) { json(res, { error: 'forbidden' }, 403); return; }
+  try {
+    const today = shanghaiDateStr();
+    const yesterday = shanghaiDateStr(new Date(Date.now() - 86400000));
+
+    const [todayRes, yestRes, weekRes, monthRes, dailyRes, pagesRes] = await Promise.all([
+      pool.query(
+        `SELECT COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE (viewed_at AT TIME ZONE 'Asia/Shanghai')::date = $1::date`,
+        [today],
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE (viewed_at AT TIME ZONE 'Asia/Shanghai')::date = $1::date`,
+        [yesterday],
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE viewed_at >= NOW() - INTERVAL '7 days'`,
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE viewed_at >= NOW() - INTERVAL '30 days'`,
+      ),
+      pool.query(
+        `SELECT (viewed_at AT TIME ZONE 'Asia/Shanghai')::date AS date,
+                COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE viewed_at >= NOW() - INTERVAL '14 days'
+         GROUP BY 1 ORDER BY 1`,
+      ),
+      pool.query(
+        `SELECT path, COUNT(*)::int AS pv, COUNT(DISTINCT visitor_hash)::int AS uv
+         FROM page_views WHERE viewed_at >= NOW() - INTERVAL '30 days'
+         GROUP BY path ORDER BY pv DESC LIMIT 20`,
+      ),
+    ]);
+
+    json(res, {
+      today: todayRes.rows[0] || { pv: 0, uv: 0 },
+      yesterday: yestRes.rows[0] || { pv: 0, uv: 0 },
+      week: weekRes.rows[0] || { pv: 0, uv: 0 },
+      month: monthRes.rows[0] || { pv: 0, uv: 0 },
+      daily: dailyRes.rows.map(r => ({
+        date: r.date instanceof Date ? r.date.toISOString().slice(0, 10) : String(r.date).slice(0, 10),
+        pv: r.pv,
+        uv: r.uv,
+      })),
+      pages: pagesRes.rows,
+      updated_at: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.error('Analytics stats error:', e.message);
+    json(res, { error: 'server error' }, 500);
+  }
+}
+
 // ── HTTP Server ────────────────────────────────────────────
 http.createServer((req, res) => {
   const u = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
@@ -198,6 +337,16 @@ http.createServer((req, res) => {
     }
 
     json(res, { error: 'not found' }, 404);
+    return;
+  }
+
+  // ── Analytics API (before /api/ proxy) ─────────────────
+  if (p === '/api/analytics/view' && req.method === 'POST') {
+    recordPageView(req, res);
+    return;
+  }
+  if (p === '/api/analytics/stats' && req.method === 'GET') {
+    analyticsStats(req, res, u);
     return;
   }
 

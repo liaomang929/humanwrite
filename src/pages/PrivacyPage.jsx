@@ -1,13 +1,30 @@
 import { Link } from 'react-router-dom'
 
+function LegalNav() {
+  return (
+    <header style={{
+      position: 'sticky', top: 0, zIndex: 50,
+      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+      background: 'rgba(10,10,15,.85)', borderBottom: '1px solid rgba(255,255,255,.07)',
+    }}>
+      <div style={{ maxWidth: 768, margin: '0 auto', padding: '0 1.25rem', height: 56, display: 'flex', alignItems: 'center' }}>
+        <Link to="/" style={{
+          display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none',
+          fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#f0eeff',
+        }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#7c6ef0' }} />
+          Blake Pierce
+        </Link>
+      </div>
+    </header>
+  )
+}
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg-secondary)' }}>
+      <LegalNav />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <Link to="/" className="inline-flex items-center gap-1 text-xs mb-6" style={{ color: 'var(--color-blue)' }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 12 }} />返回首页
-        </Link>
-
         <h1 className="text-xl font-semibold mb-6">隐私政策</h1>
 
         <div className="space-y-5 text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
