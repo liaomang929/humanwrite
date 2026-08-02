@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我中奖了吗？</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --gold: #D4AF37;
+    --gold-dim: #9A8540;
+    --gold-pale: rgba(212,175,55,.14);
+    --deep: #0a0a0f;
+    --surface: #111118;
+    --card-bg: rgba(255,255,255,.055);
+    --input-bg: rgba(255,255,255,.08);
+    --border: rgba(212,175,55,.18);
+    --border-focus: rgba(212,175,55,.55);
+    --red: #C0392B;
+    --red-light: #E74C3C;
+    --blue: #1A5C8A;
+    --blue-light: #5DADE2;
+    --text: #EDE5D0;
+    --text-mid: #A89880;
+    --text-dim: #706050;
+    --radius-card: 20px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Noto Serif SC', serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 背景 ── */
+  #stars { display:none; } /* 门户风格无星点，保留节点避免脚本报错 */
+
+  /* 背景晕光 — 对齐 blakeai.cn 门户 */
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 80% 55% at 72% -8%, rgba(124,110,240,.11) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 8% 82%, rgba(78,207,179,.06) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 45% at 50% 0%, rgba(232,108,154,.05) 0%, transparent 55%);
+  }
+
+  /* ── 容器 ── */
+  #app {
+    position:relative; z-index:1;
+    width:100%; max-width:480px; margin:0 auto;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    padding:0 18px 72px;
+  }
+
+  /* ── 顶部标题 ── */
+  .hd { text-align:center; padding:48px 0 32px; }
+  .hd-eye {
+    font-size:9px; letter-spacing:6px; color:var(--gold-dim);
+    margin-bottom:14px; text-transform:uppercase;
+  }
+  .hd h1 {
+    font-size:28px; font-weight:900; letter-spacing:4px;
+    background: linear-gradient(135deg, #F0D060 0%, #D4AF37 40%, #A07828 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 24px rgba(212,175,55,.25));
+  }
+  .hd-sep {
+    width:40px; height:1px; margin:14px auto 0;
+    background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent);
+  }
+  .hd-sub { font-size:11px; color:var(--text-dim); margin-top:10px; letter-spacing:3px; }
+
+  /* ── 屏幕 ── */
+  .sc { display:none; flex-direction:column; flex:1; animation:fi .28s ease; }
+  .sc.on { display:flex; }
+  @keyframes fi { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* ── 按钮 ── */
+  .btn {
+    width:100%; border:none; border-radius:50px; cursor:pointer;
+    font-family:'Noto Serif SC',serif; letter-spacing:2px;
+    transition:transform .15s, box-shadow .15s, opacity .15s;
+  }
+  .btn:active { transform:scale(.96); }
+  .btn+.btn { margin-top:12px; }
+  .btn-gold {
+    padding:16px; font-size:15px; font-weight:700;
+    background:linear-gradient(135deg,#E8C84A 0%,#C9991A 50%,#A07828 100%);
+    color:#1A1200;
+    box-shadow:0 4px 24px rgba(212,175,55,.22), 0 1px 0 rgba(255,255,255,.12) inset;
+  }
+  .btn-ghost {
+    padding:13px; font-size:13px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(212,175,55,.22);
+    color:var(--text-mid);
+    backdrop-filter: blur(4px);
+  }
+  .btn:disabled { opacity:.3; pointer-events:none; }
+
+  /* ── 首页 ── */
+  .home-quote {
+    text-align:center; padding:18px 0 36px;
+    font-size:19px; line-height:2.1; letter-spacing:1px;
+    color:rgba(237,229,208,.92);
+  }
+  .home-quote em { font-style:normal; color:var(--gold); }
+  .home-tags { display:flex; justify-content:center; gap:8px; margin-top:24px; }
+  .tag {
+    font-size:9px; letter-spacing:2px; color:var(--text-mid);
+    padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(212,175,55,.18);
+    background:rgba(212,175,55,.06);
+  }
+
+  /* ── 录入卡片 ── */
+  .card {
+    background:var(--card-bg);
+    border:1px solid rgba(212,175,55,.14);
+    border-radius:var(--radius-card);
+    padding:16px 16px 14px;
+    position:relative; overflow:hidden;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 40px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.06) inset;
+  }
+  .card::before {
+    content:''; position:absolute; top:0; left:20%; right:20%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(212,175,55,.55),transparent);
+  }
+
+  .type-tabs { display:flex; gap:8px; margin-bottom:14px; }
+  .tab {
+    flex:1; padding:11px 8px; border-radius:12px; cursor:pointer;
+    font-family:'Noto Serif SC',serif; font-size:13px; letter-spacing:1px;
+    border:1px solid rgba(212,175,55,.14);
+    background:var(--input-bg); color:var(--text-mid);
+    transition:all .22s;
+  }
+  .tab.on {
+    background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(212,175,55,.07));
+    border-color:rgba(212,175,55,.55); color:var(--gold);
+    box-shadow:0 0 16px rgba(212,175,55,.12);
+  }
+
+  .flabel { font-size:9px; letter-spacing:4px; color:var(--text-mid); margin-bottom:6px; }
+  .flabel-hint { letter-spacing:.5px; font-size:9px; color:var(--text-dim); font-family:'Noto Serif SC',serif; }
+
+  /* ── 期号输入 ── */
+  .period-input {
+    width:100%;
+    background:var(--input-bg);
+    border:1px solid var(--border);
+    border-radius:10px; padding:10px 8px;
+    color:var(--text);
+    font-family:'Space Mono',monospace;
+    font-size:16px; letter-spacing:3px; text-align:center;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+    margin-bottom:12px;
+  }
+  .period-input:focus {
+    border-color:var(--border-focus);
+    box-shadow:0 0 0 3px rgba(212,175,55,.08);
+  }
+  .period-input::placeholder { color:var(--text-dim); font-size:11px; letter-spacing:1px; }
+
+  /* ── 连续期数 行：[5期] [10期] [_自定义_ 期] ── */
+  .count-row {
+    display:grid;
+    grid-template-columns:1fr 1fr 1.3fr;
+    gap:6px; margin-bottom:14px;
+  }
+  .count-quick {
+    padding:10px 4px; border-radius:10px; cursor:pointer;
+    font-family:'Noto Serif SC',serif; font-size:13px; letter-spacing:.5px;
+    border:1px solid var(--border);
+    background:var(--input-bg); color:var(--text-mid); transition:all .2s;
+  }
+  .count-quick.on {
+    background:linear-gradient(135deg,rgba(212,175,55,.2),rgba(212,175,55,.08));
+    border-color:rgba(212,175,55,.6); color:var(--gold);
+  }
+  /* 自定义期数 = 输入框 + "期" 后缀，整体看起来像一个带后缀的输入 */
+  .count-custom {
+    display:flex; align-items:center; gap:2px;
+    border:1px dashed rgba(212,175,55,.45);
+    background:rgba(212,175,55,.04);
+    border-radius:10px; padding:0 8px 0 4px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .count-custom:focus-within {
+    border-style:solid;
+    border-color:var(--border-focus);
+    background:var(--input-bg);
+    box-shadow:0 0 0 3px rgba(212,175,55,.08);
+  }
+  .count-custom .count-input {
+    flex:1; min-width:0;
+    background:transparent; border:none; outline:none;
+    padding:10px 0; color:var(--gold);
+    font-family:'Space Mono',monospace; font-size:16px; font-weight:700;
+    text-align:center;
+  }
+  .count-custom .count-suffix {
+    font-size:12px; color:var(--text-mid);
+    letter-spacing:1px; flex-shrink:0;
+  }
+
+  /* ── 球 ── */
+  .bs-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+  .bs-label { font-size:9px; letter-spacing:4px; color:var(--text-mid); }
+  .bs-count { font-size:10px; font-family:'Space Mono',monospace; color:var(--gold-dim); }
+  .bs-count.ok { color:#5DBB6A; }
+
+  /* 9列网格，球尺寸自动适应 */
+  .balls {
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    gap:5px; margin-bottom:12px;
+  }
+  .ball {
+    aspect-ratio:1; border-radius:50%;
+    border:1px solid rgba(255,255,255,.09);
+    background:rgba(255,255,255,.05);
+    color:var(--text-mid);
+    font-family:'Space Mono',monospace; font-size:11px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .14s; user-select:none;
+  }
+  .ball.r {
+    background:linear-gradient(145deg,#D44030,#A02820);
+    border-color:rgba(231,76,60,.5); color:#fff;
+    box-shadow:0 2px 10px rgba(192,57,43,.45);
+  }
+  .ball.b {
+    background:linear-gradient(145deg,#2880B8,#1A5888);
+    border-color:rgba(93,173,226,.45); color:#fff;
+    box-shadow:0 2px 10px rgba(36,113,163,.45);
+  }
+
+  /* 预览 + 随机 合并行 */
+  .prev-rand-row {
+    display:flex; gap:8px; align-items:center; margin-top:10px;
+  }
+  .preview {
+    flex:1; min-width:0;
+    display:flex; gap:4px; flex-wrap:wrap; align-items:center;
+    min-height:34px; padding:6px 10px;
+    background:rgba(0,0,0,.28); border-radius:10px;
+    border:1px solid rgba(255,255,255,.06);
+  }
+  .rand-mini { display:flex; gap:5px; align-items:center; flex-shrink:0; }
+  .rand-count-input {
+    width:38px;
+    background:var(--input-bg); border:1px solid var(--border);
+    border-radius:8px; padding:7px 4px;
+    color:var(--text); font-family:'Space Mono',monospace; font-size:13px;
+    text-align:center; outline:none;
+  }
+  .btn-rand {
+    padding:8px 12px; border-radius:8px; cursor:pointer;
+    font-family:'Noto Serif SC',serif; font-size:12px; letter-spacing:1px;
+    border:1px solid rgba(212,175,55,.3);
+    background:rgba(212,175,55,.08); color:var(--gold);
+    transition:all .2s; white-space:nowrap;
+  }
+  .btn-rand:active { background:rgba(212,175,55,.18); transform:scale(.97); }
+
+  .pball {
+    width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace; font-size:9px; font-weight:700;
+  }
+  .pball.r { background:linear-gradient(145deg,#D44030,#A02820); color:#fff; }
+  .pball.b { background:linear-gradient(145deg,#2880B8,#1A5888); color:#fff; }
+  .psep { color:var(--text-dim); font-size:10px; margin:0 1px; }
+  .pempty { font-size:10px; color:var(--text-dim); letter-spacing:1px; }
+
+  /* ── 保存提示 ── */
+  .save-toast {
+    position:fixed; bottom:40px; left:50%; transform:translateX(-50%) translateY(16px);
+    background:rgba(20,16,8,.92); border:1px solid rgba(212,175,55,.45);
+    color:var(--gold); font-size:12px; letter-spacing:2px;
+    padding:11px 30px; border-radius:30px;
+    opacity:0; pointer-events:none;
+    transition:opacity .28s, transform .28s;
+    z-index:999; backdrop-filter:blur(10px);
+    box-shadow:0 8px 32px rgba(0,0,0,.4), 0 0 20px rgba(212,175,55,.1);
+  }
+  .save-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── 确认删除弹窗 ── */
+  .confirm-mask {
+    position:fixed; inset:0; z-index:998;
+    background:rgba(8,6,12,.6);
+    backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+    animation:fadeIn .2s ease;
+  }
+  .confirm-mask.show { display:flex; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .confirm-box {
+    width:100%; max-width:340px;
+    background:linear-gradient(155deg,rgba(40,30,20,.96),rgba(20,16,24,.96));
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:18px; padding:22px 22px 18px;
+    box-shadow:0 16px 60px rgba(0,0,0,.6), 0 0 28px rgba(212,175,55,.08);
+    animation:popIn .22s cubic-bezier(.18,.9,.4,1.2);
+  }
+  @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+  .confirm-title {
+    font-size:15px; color:var(--gold); letter-spacing:2px;
+    font-family:'Noto Serif SC',serif; text-align:center;
+    margin-bottom:12px;
+  }
+  .confirm-msg {
+    font-size:12px; color:var(--text-mid); letter-spacing:.5px;
+    text-align:center; line-height:1.8; margin-bottom:18px;
+    padding:10px 12px;
+    background:rgba(0,0,0,.25);
+    border-radius:10px;
+    border:1px solid rgba(212,175,55,.1);
+  }
+  .confirm-msg .cm-balls { display:flex; gap:3px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .confirm-msg .cm-meta { color:var(--text-dim); font-size:10px; margin-top:6px; }
+  .confirm-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .cbtn {
+    padding:11px 8px; border-radius:10px; cursor:pointer;
+    font-family:'Noto Serif SC',serif; font-size:13px; letter-spacing:2px;
+    border:1px solid transparent; transition:all .18s;
+  }
+  .cbtn-cancel {
+    background:rgba(255,255,255,.05);
+    border-color:rgba(212,175,55,.2);
+    color:var(--text-mid);
+  }
+  .cbtn-cancel:active { background:rgba(255,255,255,.08); }
+  .cbtn-danger {
+    background:linear-gradient(135deg,#C0392B,#922419);
+    color:#fff;
+    box-shadow:0 4px 14px rgba(192,57,43,.35);
+  }
+  .cbtn-danger:active { transform:scale(.97); }
+
+  /* ── 票据卡片：删除按钮 ── */
+  .ht-del {
+    flex-shrink:0; width:28px; height:28px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.06);
+    color:rgba(180,160,140,.55);
+    cursor:pointer; transition:all .18s;
+    padding:0; margin-left:6px;
+  }
+  .ht-del:hover, .ht-del:active {
+    background:rgba(192,57,43,.18);
+    border-color:rgba(192,57,43,.5);
+    color:#E57060;
+  }
+  .ht-del svg { width:14px; height:14px; display:block; }
+
+  /* ── 首页彩票列表 ── */
+  .home-tickets { width:100%; margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+  .home-win-banner {
+    width:100%; margin-bottom:10px; padding:18px 20px;
+    background:linear-gradient(135deg,rgba(212,175,55,.1),rgba(212,175,55,.05));
+    border:1px solid rgba(212,175,55,.35); border-radius:18px; text-align:center;
+    box-shadow:0 0 30px rgba(212,175,55,.08);
+  }
+  .home-win-banner .hwb-title {
+    font-size:18px; color:var(--gold); font-family:'Noto Serif SC',serif;
+    margin-bottom:5px; letter-spacing:2px;
+  }
+  .home-win-banner .hwb-sub { font-size:11px; color:var(--text-dim); letter-spacing:1px; }
+
+  .hticket {
+    display:flex; flex-direction:column; gap:9px;
+    padding:14px 16px; border-radius:16px;
+    background:rgba(255,255,255,.065); border:1px solid rgba(212,175,55,.1);
+    transition:border-color .2s, background .2s;
+  }
+  .hticket.win  {
+    border-color:rgba(212,175,55,.4);
+    background:linear-gradient(135deg,rgba(212,175,55,.1),rgba(212,175,55,.04));
+  }
+  .hticket.lost { opacity:.6; }
+  .ht-head { display:flex; align-items:center; gap:8px; }
+  .ht-badge {
+    font-size:9px; letter-spacing:1px; padding:3px 9px; border-radius:8px;
+    background:rgba(255,255,255,.09); color:var(--text-mid); font-weight:700;
+  }
+  .ht-badge.ssq { background:rgba(192,57,43,.22); color:#F08070; }
+  .ht-badge.dlt { background:rgba(36,113,163,.22); color:#7ACDEE; }
+  .ht-period { font-family:'Space Mono',monospace; font-size:10px; color:var(--text-mid); }
+  .ht-status { margin-left:auto; font-size:11px; letter-spacing:1px; }
+  .ht-status.pending { color:var(--text-mid); }
+  .ht-status.win  { color:var(--gold); font-weight:700; }
+  .ht-status.lost { color:#555; }
+  .ht-balls { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+  .ht-stats { font-size:10px; color:var(--text-mid); letter-spacing:.5px; }
+  .ht-stats b { color:rgba(232,224,204,.85); font-weight:600; }
+  .ht-stats .amt  { color:var(--gold); font-weight:700; }
+  .ht-stats .pend { color:rgba(212,175,55,.65); }
+  .ht-latest { display:flex; flex-direction:column; gap:6px; margin-top:2px; }
+  .ht-latest-row { font-size:10px; color:var(--text-mid); letter-spacing:.5px; }
+  .ht-latest-row .lbl { color:rgba(232,224,204,.78); margin-right:6px; }
+  .ht-latest-balls { display:flex; gap:4px; flex-wrap:nowrap; align-items:center; }
+  .ht-latest-balls .pball { background:rgba(255,255,255,.08); color:rgba(232,224,204,.82); }
+  .ht-latest-balls .pball.hit { background:rgba(212,175,55,.24); color:var(--gold); border-color:rgba(212,175,55,.42); }
+  .home-tickets-empty { font-size:11px; color:var(--text-mid); letter-spacing:1px; text-align:center; padding:8px 0; }
+
+  /* ── 多期结果 ── */
+  .multi-list { display:flex; flex-direction:column; gap:10px; margin-top:4px; }
+  .multi-row {
+    display:flex; align-items:center; gap:10px; padding:10px 12px;
+    background:rgba(255,255,255,.025); border:1px solid rgba(212,175,55,.07); border-radius:12px;
+    flex-wrap:wrap;
+  }
+  .multi-row.win { border-color:rgba(212,175,55,.35); background:rgba(212,175,55,.06); }
+  .multi-row.pending { opacity:.5; }
+  .multi-period { font-family:'Space Mono',monospace; font-size:11px; color:var(--text-dim); min-width:62px; }
+  .multi-prize { font-size:12px; color:var(--gold); font-weight:700; margin-left:auto; white-space:nowrap; }
+  .multi-tag {
+    font-size:10px; letter-spacing:1px; padding:2px 8px; border-radius:6px;
+    background:rgba(255,255,255,.05); color:var(--text-dim);
+  }
+  .multi-tag.win { background:rgba(212,175,55,.14); color:var(--gold); }
+  .multi-tag.none { color:#444; }
+  .multi-extra { width:100%; display:flex; flex-direction:column; gap:6px; margin-top:2px; }
+  .multi-extra-row { font-size:10px; color:var(--text-mid); letter-spacing:.5px; }
+  .multi-extra-row .lbl { color:rgba(232,224,204,.78); margin-right:6px; }
+  .multi-extra-balls { display:flex; gap:4px; flex-wrap:nowrap; align-items:center; }
+  .multi-extra-balls .pball { background:rgba(255,255,255,.08); color:rgba(232,224,204,.82); }
+  .multi-extra-balls .pball.hit { background:rgba(212,175,55,.24); color:var(--gold); border-color:rgba(212,175,55,.42); }
+
+  /* ── Loading ── */
+  #sc-load { align-items:center; justify-content:center; text-align:center; padding:80px 0; }
+  .ring-wrap { width:150px; height:150px; position:relative; margin:0 auto 40px; }
+  .ring {
+    position:absolute; border-radius:50%;
+    border:1.5px solid transparent;
+    animation:spin var(--s,4s) linear infinite;
+  }
+  .ring:nth-child(1){ inset:0;    border-top-color:var(--gold);         border-right-color:rgba(212,175,55,.12); --s:3s; }
+  .ring:nth-child(2){ inset:18px; border-bottom-color:var(--red-light); border-left-color:rgba(192,57,43,.12); --s:5s; animation-direction:reverse; }
+  .ring:nth-child(3){ inset:36px; border-top-color:rgba(212,175,55,.28); --s:7s; }
+  .ring-core { position:absolute; inset:52px; display:flex; align-items:center; justify-content:center; font-size:28px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .load-msg { font-size:14px; color:var(--gold-dim); letter-spacing:2px; }
+  .load-msg::after { content:''; animation:dots 1.6s steps(4,end) infinite; }
+  @keyframes dots { 0%{content:''} 25%{content:'·'} 50%{content:'··'} 75%{content:'···'} }
+
+  /* ── 结果 ── */
+  #sc-result { align-items:center; text-align:center; }
+  .ribbon {
+    display:inline-block; font-size:10px; letter-spacing:4px;
+    padding:5px 18px; border-radius:20px; margin-bottom:22px;
+  }
+  .ribbon.win  { background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.3); color:var(--gold); }
+  .ribbon.loss { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); color:var(--text-dim); }
+  .prize-amt  { font-family:'Space Mono',monospace; font-size:50px; font-weight:700; color:var(--gold); text-shadow:0 0 40px rgba(212,175,55,.3); letter-spacing:2px; }
+  .prize-note { font-size:11px; color:var(--gold-dim); letter-spacing:1px; margin:4px 0 14px; }
+  .r-title { font-size:22px; font-weight:900; line-height:1.5; padding:0 8px; margin-bottom:8px; }
+  .r-title.win  { color:var(--gold); }
+  .r-title.loss { color:var(--text); }
+  .r-sub { font-size:13px; color:var(--text-dim); line-height:2; margin-bottom:28px; white-space:pre-line; }
+  .cmp { width:100%; text-align:left; margin-bottom:24px; }
+  .cmp-title { font-size:10px; letter-spacing:2px; color:var(--text-dim); margin-bottom:14px; }
+  .cmp-title b { color:var(--gold); font-weight:normal; }
+  .cmp-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .cmp-lbl { font-size:10px; color:var(--text-dim); letter-spacing:1px; width:40px; flex-shrink:0; }
+  .cmp-balls { display:flex; gap:5px; flex-wrap:wrap; }
+  .cb {
+    width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace; font-size:10px; font-weight:700;
+  }
+  .cb.r     { background:rgba(192,57,43,.2);  color:rgba(231,76,60,.45); }
+  .cb.b     { background:rgba(36,113,163,.2); color:rgba(93,173,226,.45); }
+  .cb.r.hit { background:var(--gold); color:#1A1200; box-shadow:0 0 12px rgba(212,175,55,.55); }
+  .cb.b.hit { background:var(--gold); color:#1A1200; box-shadow:0 0 12px rgba(212,175,55,.55); }
+  .cmp-hr { border:none; border-top:1px solid rgba(255,255,255,.05); margin:8px 0; }
+  .err-box {
+    width:100%; padding:18px; border-radius:14px; text-align:center;
+    background:rgba(192,57,43,.06); border:1px solid rgba(192,57,43,.18);
+    color:var(--red-light); font-size:13px; line-height:1.8; margin-bottom:20px;
+  }
+
+  /* 粒子 / 分享 */
+  #fx { position:fixed; inset:0; pointer-events:none; z-index:999; display:none; }
+  #share-canvas { display:none; }
+
+  /* 底部 */
+  .note { font-size:9px; color:rgba(160,144,128,.65); text-align:center; margin-top:24px; line-height:2.2; letter-spacing:.5px; }
+
+  /* ════════════════════════════════════════
+     响应式 — 平板 / PC (≥640px)
+  ════════════════════════════════════════ */
+  @media (min-width:640px){
+    #app {
+      max-width:560px;
+      padding:0 32px 88px;
+    }
+
+    .hd { padding:60px 0 40px; }
+    .hd h1 { font-size:34px; letter-spacing:5px; }
+    .hd-sub { font-size:12px; }
+
+    .home-quote { font-size:22px; padding:24px 0 48px; }
+
+    .card { padding:28px 28px 24px; }
+
+    /* 球在宽屏 */
+    .balls { gap:7px; }
+    .ball { font-size:12px; }
+    .ball:hover:not(.r):not(.b) {
+      background:rgba(255,255,255,.06);
+      border-color:rgba(212,175,55,.25);
+      color:var(--text);
+      transform:scale(1.1);
+    }
+    .ball.r:hover { transform:scale(1.12); filter:brightness(1.1); }
+    .ball.b:hover { transform:scale(1.12); filter:brightness(1.1); }
+
+    .pball { width:30px; height:30px; font-size:11px; }
+
+    /* 按钮 */
+    .btn-gold {
+      padding:17px; font-size:16px;
+      transition:transform .15s, box-shadow .2s;
+    }
+    .btn-gold:hover {
+      transform:translateY(-1px);
+      box-shadow:0 8px 32px rgba(212,175,55,.35), 0 1px 0 rgba(255,255,255,.12) inset;
+    }
+    .btn-ghost:hover { background:rgba(212,175,55,.05); border-color:rgba(212,175,55,.28); }
+
+    /* 首页彩票卡片 hover */
+    .hticket { transition:border-color .2s, background .2s, transform .18s, box-shadow .18s; }
+    .hticket:hover {
+      border-color:rgba(212,175,55,.22);
+      transform:translateY(-2px);
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+    }
+    .hticket.win:hover { box-shadow:0 6px 28px rgba(212,175,55,.12); }
+
+    /* tab hover */
+    .tab:hover:not(.on) { border-color:rgba(212,175,55,.25); color:rgba(212,175,55,.65); }
+    .count-quick:hover:not(.on) { border-color:rgba(212,175,55,.25); color:rgba(212,175,55,.65); }
+    .btn-rand:hover { background:rgba(212,175,55,.12); border-color:rgba(212,175,55,.4); }
+
+    /* 更宽裕的间距 */
+    .home-win-banner { padding:20px 24px; }
+    .hticket { padding:16px 20px; }
+
+    /* 球号预览 */
+    .preview { padding:10px 16px; border-radius:14px; }
+  }
+
+  @media (min-width:900px){
+    #app { max-width:620px; }
+    .ball { width:42px; height:42px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<canvas id="fx"></canvas>
+
+<div id="app">
+  <div class="hd">
+    <div class="hd-eye">天命查询</div>
+    <h1>我中奖了吗？</h1>
+    <div class="hd-sep"></div>
+    <div class="hd-sub">拍一张，等天意</div>
+  </div>
+
+  <!-- 首页 -->
+  <div class="sc on" id="sc-home">
+    <div class="home-quote">今天，<br>是你要<em>退休</em>的日子吗？</div>
+    <button class="btn btn-gold" onclick="go('sc-input')">录入彩票号码</button>
+
+    <!-- 中奖 banner（有中奖时显示） -->
+    <div id="home-win-banner" class="home-win-banner" style="display:none">
+      <div class="hwb-title">天意归来 ✦</div>
+      <div class="hwb-sub">您有彩票已中奖，请查看下方明细</div>
+    </div>
+
+    <!-- 已保存彩票列表 -->
+    <div id="home-tickets" class="home-tickets" style="display:none"></div>
+
+    <div class="home-tags" id="home-tags">
+      <span class="tag">大乐透</span>
+      <span class="tag">双色球</span>
+    </div>
+    <div class="note">数据来源：福彩官网 / 中国体彩<br>本工具仅供查询，不提供选号及预测</div>
+  </div>
+
+  <!-- 录入 -->
+  <div class="sc" id="sc-input">
+    <div class="card">
+      <div class="type-tabs">
+        <button class="tab on" id="tab-dlt" onclick="setType('dlt')">大乐透</button>
+        <button class="tab"    id="tab-ssq" onclick="setType('ssq')">双色球</button>
+      </div>
+
+      <div class="flabel">起始期号 <span class="flabel-hint">（从第几期起）</span></div>
+      <input class="period-input" id="period"
+             type="text" inputmode="numeric" placeholder="如 26055">
+
+      <div class="flabel">连续期数 <span class="flabel-hint">（可自定义任意期数）</span></div>
+      <div class="count-row">
+        <button class="count-quick" id="cq5"  onclick="setPeriodCount(5)">5 期</button>
+        <button class="count-quick" id="cq10" onclick="setPeriodCount(10)">10 期</button>
+        <label class="count-custom" for="period-count">
+          <input class="count-input" id="period-count" type="number" min="1" max="50" value="1"
+                 oninput="syncCountQuick()">
+          <span class="count-suffix">期</span>
+        </label>
+      </div>
+
+      <div class="bs-hd">
+        <div class="bs-label">红 球</div>
+        <div class="bs-count" id="rc">0 / 5</div>
+      </div>
+      <div class="balls" id="rg"></div>
+
+      <div class="bs-hd">
+        <div class="bs-label" id="bl">蓝 球</div>
+        <div class="bs-count" id="bc">0 / 2</div>
+      </div>
+      <div class="balls" id="bg"></div>
+
+      <div class="prev-rand-row">
+        <div class="preview" id="prev"><span class="pempty">尚未选择号码</span></div>
+        <div class="rand-mini">
+          <input class="rand-count-input" id="rand-count" type="number" min="1" max="20" value="1">
+          <span style="font-size:10px;color:var(--text-dim)">注</span>
+          <button class="btn-rand" id="btn-rand" onclick="randomPick()">随机</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-gold" style="margin-top:20px;" id="btn-ok" onclick="submit()">保存彩票</button>
+    <button class="btn btn-ghost" onclick="go('sc-home')">返回</button>
+  </div>
+
+  <!-- 确认删除弹窗 -->
+  <div class="confirm-mask" id="confirm-mask">
+    <div class="confirm-box">
+      <div class="confirm-title">确认删除？</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-btns">
+        <button class="cbtn cbtn-cancel" onclick="closeConfirm()">取 消</button>
+        <button class="cbtn cbtn-danger" id="confirm-ok">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="sc" id="sc-load" style="align-items:center;justify-content:center;padding:80px 0;">
+    <div class="ring-wrap">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="ring-core">☯</div>
+    </div>
+    <div class="load-msg" id="lmsg">正在与天命沟通中</div>
+  </div>
+
+  <!-- 结果 -->
+  <div class="sc" id="sc-result">
+    <div id="ribbon" class="ribbon"></div>
+    <div id="pb"></div>
+    <div id="rt" class="r-title"></div>
+    <div id="rs" class="r-sub"></div>
+    <div id="cmp" class="cmp card"></div>
+    <button class="btn btn-gold"  onclick="saveCard()">保存分享卡片</button>
+    <button class="btn btn-ghost" onclick="again()">再查一张</button>
+    <canvas id="share-canvas" width="800" height="560"></canvas>
+  </div>
+</div>
+
+<script>
+// 本地 file:// 页面也要读取门户服务器的开奖接口；部署到门户后仍使用同源相对地址。
+const API_BASE = location.protocol === 'file:' ? 'https://blakeai.cn/lottery' : '/lottery';
+
+const LT = {
+  ssq:{ name:'双色球', rc:6, rm:33, bc:1, bm:16, draws:[2,4,0] },
+  dlt:{ name:'大乐透', rc:5, rm:35, bc:2, bm:12, draws:[1,3,5] },
+};
+
+const MSGS = ['正在与天命沟通中','天机推演中','星轨归位，揭晓将至','命运之轮旋转中','天意即将显现'];
+
+let type='dlt', red=[], blue=[], lastTicket=null, multiResults=null;
+
+// ── Client ID ──
+function getClientId(){
+  let cid=localStorage.getItem('diw_cid');
+  if(!cid){ cid='cid_'+Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem('diw_cid',cid); }
+  return cid;
+}
+
+// ── 屏幕切换 ──
+function go(id){
+  document.querySelectorAll('.sc').forEach(s=>{ s.classList.remove('on'); s.style.display=''; });
+  const el=document.getElementById(id);
+  el.classList.add('on'); el.style.display='flex'; el.style.flexDirection='column';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='sc-home') loadHomeTickets();
+  if(id==='sc-input') applyDefaultPeriod(false);
+}
+
+// ── 连续期数 ──
+function setPeriodCount(n){
+  document.getElementById('period-count').value=n;
+  syncCountQuick();
+}
+function syncCountQuick(){
+  const v=parseInt(document.getElementById('period-count').value)||1;
+  document.getElementById('cq5').classList.toggle('on',v===5);
+  document.getElementById('cq10').classList.toggle('on',v===10);
+}
+
+// ── 彩种 ──
+function setType(t){
+  type=t; red=[]; blue=[];
+  document.getElementById('tab-ssq').classList.toggle('on',t==='ssq');
+  document.getElementById('tab-dlt').classList.toggle('on',t==='dlt');
+  document.getElementById('bl').textContent='蓝 球';
+  renderBalls(); renderPreview();
+  // 切彩种时强制刷新默认期号（不同彩种期号不同）
+  applyDefaultPeriod(true);
+}
+
+// ── 默认起始期号：最新开奖期号 +1 ──
+const latestPeriodCache = {};
+async function applyDefaultPeriod(force){
+  const inp = document.getElementById('period');
+  if(!force && inp.value.trim()) return;  // 用户已经填了就不覆盖
+  const t = type;
+  inp.placeholder = '加载中…';
+  try{
+    let latest = latestPeriodCache[t];
+    if(!latest){
+      const r = await fetch(`${API_BASE}/api/latest/${t}`);
+      if(r.ok){
+        const data = await r.json();
+        latest = data.period;
+        latestPeriodCache[t] = latest;
+      }
+    }
+    if(latest){
+      // 期号 +1（如 26055 → 26056；跨年极端情况用户可手动改）
+      const next = String(parseInt(latest, 10) + 1);
+      // 只在 setType 触发的彩种切换或字段为空时填入
+      if(force || !inp.value.trim()) inp.value = next;
+    }
+  }catch(e){}
+  inp.placeholder = '如 26055';
+}
+
+// ── 渲染球 ──
+function renderBalls(){
+  const lt=LT[type];
+
+  const fill=(wid,max,sel,cls)=>{
+    const w=document.getElementById(wid); w.innerHTML='';
+    for(let i=1;i<=max;i++){
+      const b=document.createElement('div');
+      b.className='ball'+(sel.includes(i)?' '+cls:'');
+      b.textContent=i<10?'0'+i:''+i;
+      b.onclick=()=>toggle(cls,i);
+      w.appendChild(b);
+    }
+  };
+  fill('rg',lt.rm,red,'r');
+  fill('bg',lt.bm,blue,'b');
+  updateCount();
+}
+
+function toggle(cls,n){
+  const arr=cls==='r'?red:blue, max=cls==='r'?LT[type].rc:LT[type].bc;
+  const i=arr.indexOf(n);
+  if(i!==-1) arr.splice(i,1);
+  else if(arr.length<max){ arr.push(n); arr.sort((a,b)=>a-b); }
+  renderBalls(); renderPreview();
+}
+
+function updateCount(){
+  const lt=LT[type];
+  const rc=document.getElementById('rc'), bc=document.getElementById('bc');
+  rc.textContent=`${red.length} / ${lt.rc}`; rc.className='bs-count'+(red.length===lt.rc?' ok':'');
+  bc.textContent=`${blue.length} / ${lt.bc}`; bc.className='bs-count'+(blue.length===lt.bc?' ok':'');
+}
+
+function renderPreview(){
+  const w=document.getElementById('prev');
+  if(!red.length&&!blue.length){ w.innerHTML='<span class="pempty">尚未选择号码</span>'; return; }
+  const rh=red.map(n=>`<div class="pball r">${n<10?'0'+n:n}</div>`).join('');
+  const bh=blue.map(n=>`<div class="pball b">${n<10?'0'+n:n}</div>`).join('');
+  const sep=(red.length&&blue.length)?'<span class="psep">+</span>':'';
+  w.innerHTML=rh+sep+bh;
+}
+
+// ── 随机选号 ──
+function randomSample(max, count){
+  const pool=Array.from({length:max},(_,i)=>i+1);
+  const out=[];
+  while(out.length<count){ const i=Math.floor(Math.random()*pool.length); out.push(pool.splice(i,1)[0]); }
+  return out.sort((a,b)=>a-b);
+}
+
+function randomPick(){
+  const lt=LT[type];
+  const n=Math.max(1,parseInt(document.getElementById('rand-count').value)||1);
+
+  if(n===1){
+    // 填满球选择器，让用户确认后再保存
+    red=randomSample(lt.rm,lt.rc);
+    blue=randomSample(lt.bm,lt.bc);
+    renderBalls(); renderPreview();
+  } else {
+    // 多注：需要先填期号
+    const period=document.getElementById('period').value.trim();
+    const count=Math.max(1,parseInt(document.getElementById('period-count').value)||1);
+    if(!period) return alert('请先填写起始期号');
+    const startPeriod=parseInt(period);
+    const list=JSON.parse(localStorage.getItem('diw_tickets')||'[]');
+    for(let i=0;i<n;i++){
+      list.push({
+        id:Date.now().toString(36)+Math.random().toString(36).slice(2),
+        lottery_type:type,
+        red_balls:randomSample(lt.rm,lt.rc),
+        blue_balls:randomSample(lt.bm,lt.bc),
+        start_period:startPeriod,
+        count,
+        saved_at:new Date().toISOString()
+      });
+    }
+    localStorage.setItem('diw_tickets',JSON.stringify(list));
+    showToast('已随机生成并保存 '+n+' 注');
+    setTimeout(()=>{ go('sc-home'); resetInput(); },900);
+  }
+}
+
+// ── 提交（保存）──
+function submit(){
+  const lt=LT[type], period=document.getElementById('period').value.trim();
+  const count=Math.max(1,parseInt(document.getElementById('period-count').value)||1);
+  if(!period)          return alert('请输入起始期号');
+  if(red.length<lt.rc) return alert(`请选择 ${lt.rc} 个红球`);
+  if(blue.length<lt.bc) return alert(`请选择 ${lt.bc} 个蓝球`);
+
+  const entry={
+    id: Date.now().toString(36)+Math.random().toString(36).slice(2),
+    lottery_type: type,
+    red_balls:  [...red].sort((a,b)=>a-b),
+    blue_balls: [...blue].sort((a,b)=>a-b),
+    start_period: parseInt(period),
+    count,
+    saved_at: new Date().toISOString()
+  };
+
+  const list=JSON.parse(localStorage.getItem('diw_tickets')||'[]');
+  list.push(entry);
+  localStorage.setItem('diw_tickets', JSON.stringify(list));
+
+  showToast(count===1?'已保存':'已保存 '+count+' 期');
+  setTimeout(()=>{ go('sc-home'); resetInput(); }, 900);
+}
+
+function showToast(msg){
+  let t=document.getElementById('save-toast');
+  if(!t){ t=document.createElement('div'); t.id='save-toast'; t.className='save-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function resetInput(){
+  red=[]; blue=[];
+  document.getElementById('period').value='';
+  document.getElementById('period-count').value='1';
+  syncCountQuick();
+  renderBalls(); renderPreview();
+  applyDefaultPeriod(true);
+}
+
+// ── 前端对奖函数 ──
+function calcPrizeDlt(ur,ub,dr,db,poolHigh){
+  const hr=ur.filter(n=>dr.includes(n)).length;
+  const hb=ub.filter(n=>db.includes(n)).length;
+  // 2026 年第 26014 期起 7 个奖级；固定奖随奖池≥8亿走高档；追加不提升固定奖
+  const a=poolHigh
+    ? {3:6666,4:380,5:200,6:18,7:7}
+    : {3:5000,4:300,5:150,6:15,7:5};
+  if(hr===5&&hb===2) return {level:1,amount:10000000,label:'一等奖'};
+  if(hr===5&&hb===1) return {level:2,amount:500000,label:'二等奖'};
+  if((hr===5&&hb===0)||(hr===4&&hb===2)) return {level:3,amount:a[3],label:'三等奖'};
+  if(hr===4&&hb===1) return {level:4,amount:a[4],label:'四等奖'};
+  if((hr===4&&hb===0)||(hr===3&&hb===2)) return {level:5,amount:a[5],label:'五等奖'};
+  if((hr===3&&hb===1)||(hr===2&&hb===2)) return {level:6,amount:a[6],label:'六等奖'};
+  if((hr===3&&hb===0)||(hr===1&&hb===2)||(hr===2&&hb===1)||(hr===0&&hb===2))
+    return {level:7,amount:a[7],label:'七等奖'};
+  return {level:0,amount:0,label:'未中奖'};
+}
+function calcPrizeSsq(ur,ub,dr,db){
+  const hr=ur.filter(n=>dr.includes(n)).length;
+  const hb=ub.filter(n=>db.includes(n)).length;
+  if(hr===6&&hb===1) return {level:1,amount:5000000,label:'一等奖'};
+  if(hr===6&&hb===0) return {level:2,amount:200000,label:'二等奖'};
+  if(hr===5&&hb===1) return {level:3,amount:3000,label:'三等奖'};
+  if((hr===5&&hb===0)||(hr===4&&hb===1)) return {level:4,amount:200,label:'四等奖'};
+  if((hr===4&&hb===0)||(hr===3&&hb===1)) return {level:5,amount:10,label:'五等奖'};
+  if(hb===1&&hr<=2) return {level:6,amount:5,label:'六等奖'};
+  return {level:0,amount:0,label:'未中奖'};
+}
+
+function countPositionalHits(userRed,userBlue,drawRed,drawBlue){
+  const redHits=userRed.filter(n=>drawRed.includes(n)).length;
+  const blueHits=userBlue.filter(n=>drawBlue.includes(n)).length;
+  return {redHits,blueHits,totalHits:redHits+blueHits};
+}
+
+function getLatestPrize(ltype,userRed,userBlue,draw){
+  if(!draw) return null;
+  if(ltype==='dlt'){
+    return calcPrizeDlt(userRed,userBlue,draw.red_balls,draw.blue_balls,!!draw.pool_high);
+  }
+  return calcPrizeSsq(userRed,userBlue,draw.red_balls,draw.blue_balls);
+}
+
+function renderMarkedBalls(drawRed,drawBlue,userRed,userBlue){
+  const ball=(n,cls,hit=false)=>`<div class="pball ${cls}${hit?' hit':''}">${n<10?'0'+n:n}</div>`;
+  const red=(drawRed||[]).map(n=>ball(n,'r',userRed.includes(n))).join('');
+  const blue=(drawBlue||[]).map(n=>ball(n,'b',userBlue.includes(n))).join('');
+  return `${red}<span class="psep">+</span>${blue}`;
+}
+
+// ── 首页彩票列表（从 localStorage 读取 + 前端对奖）──
+async function loadHomeTickets(){
+  const wrap=document.getElementById('home-tickets');
+  const tags=document.getElementById('home-tags');
+  const banner=document.getElementById('home-win-banner');
+
+  const raw=JSON.parse(localStorage.getItem('diw_tickets')||'[]');
+  if(!raw.length){
+    wrap.style.display='none'; tags.style.display=''; banner.style.display='none'; return;
+  }
+
+  // 收集所有需要查询的期号
+  const needed=new Set();
+  raw.forEach(tk=>{
+    for(let i=0;i<tk.count;i++) needed.add(tk.lottery_type+'/'+(tk.start_period+i));
+  });
+
+  // 并发拉取开奖结果（404 = 尚未开奖）
+  const drawCache={};
+  await Promise.all([...needed].map(async key=>{
+    const [ltype,period]=key.split('/');
+    try{
+      const r=await fetch(`${API_BASE}/api/result/${ltype}/${period}`);
+      if(r.ok) drawCache[key]=await r.json();
+    }catch(e){}
+  }));
+
+  const latestDrawCache={};
+  await Promise.all([...new Set(raw.map(tk=>tk.lottery_type))].map(async ltype=>{
+    try{
+      const r=await fetch(`${API_BASE}/api/latest/${ltype}`);
+      if(r.ok) latestDrawCache[ltype]=await r.json();
+    }catch(e){}
+  }));
+
+  // 按号码组合分组，聚合所有期
+  const groups={};
+  raw.forEach(tk=>{
+    const gkey=tk.lottery_type+'|'+tk.red_balls.join(',')+'|'+tk.blue_balls.join(',');
+    if(!groups[gkey]) groups[gkey]={lottery_type:tk.lottery_type,red_balls:tk.red_balls,blue_balls:tk.blue_balls,allPeriods:[]};
+    for(let i=0;i<tk.count;i++) groups[gkey].allPeriods.push(tk.start_period+i);
+  });
+
+  // 对每组的每期算奖
+  const groupList=Object.values(groups).map(g=>{
+    const periods=[...new Set(g.allPeriods)].sort((a,b)=>a-b);
+    const pResults=periods.map(p=>{
+      const draw=drawCache[g.lottery_type+'/'+p];
+      if(!draw) return {period:p,status:'pending'};
+      if(g.lottery_type==='dlt'){
+        return {period:p,status:'checked',prize:calcPrizeDlt(
+          g.red_balls,g.blue_balls,draw.red_balls,draw.blue_balls,!!draw.pool_high
+        )};
+      }
+      return {period:p,status:'checked',prize:calcPrizeSsq(
+        g.red_balls,g.blue_balls,draw.red_balls,draw.blue_balls
+      )};
+    });
+    const latestDraw=latestDrawCache[g.lottery_type];
+    const latestHits=latestDraw
+      ? countPositionalHits(g.red_balls,g.blue_balls,latestDraw.red_balls||[],latestDraw.blue_balls||[])
+      : null;
+    const latestPrize=getLatestPrize(g.lottery_type,g.red_balls,g.blue_balls,latestDraw);
+    return {...g,periods,pResults,latestDraw,latestHits,latestPrize};
+  });
+
+  const hasAnyWin=groupList.some(g=>g.pResults.some(r=>r.status==='checked'&&r.prize.level>0));
+  banner.style.display=hasAnyWin?'block':'none';
+  tags.style.display='none';
+  wrap.style.display='flex';
+  wrap.innerHTML=groupList.map(g=>renderTicketCard(g)).join('');
+  if(hasAnyWin) setTimeout(()=>confetti(groupList.some(g=>g.pResults.some(r=>r.prize&&r.prize.level<=2))),300);
+}
+
+function renderTicketCard(g){
+  const ball=(n,cls,hit=false)=>`<div class="pball ${cls}${hit?' hit':''}">${n<10?'0'+n:n}</div>`;
+  const lt=LT[g.lottery_type];
+  const total=g.periods.length;
+  const pending=g.pResults.filter(r=>r.status==='pending').length;
+  const won=g.pResults.filter(r=>r.status==='checked'&&r.prize.level>0);
+  const totalAmt=won.reduce((s,r)=>s+r.prize.amount,0);
+  const hasWin=won.length>0;
+  const checkedCount=total-pending;
+
+  const red=g.red_balls.map(n=>ball(n,'r')).join('');
+  const blue=g.blue_balls.map(n=>ball(n,'b')).join('');
+
+  let statsHtml=`第 <b>${g.periods[0]}</b> 期起 · 共 ${total} 期`;
+  if(pending>0) statsHtml+=` · <span class="pend">${pending} 期待开奖</span>`;
+  if(checkedCount>0&&!hasWin) statsHtml+=` · ${checkedCount} 期未中奖`;
+  if(hasWin) statsHtml+=` · 已中奖 <span class="amt">¥${totalAmt.toLocaleString()}</span>`;
+
+  const statusCls=hasWin?'win':(pending>0?'pending':'lost');
+  const statusTxt=hasWin?`中奖 ${won.length} 期`:(pending>0?`待开奖 ${pending} 期`:'未中奖');
+  const cardCls=hasWin?' win':(pending===total?'':' lost');
+
+  const gkey=g.lottery_type+'|'+g.red_balls.join(',')+'|'+g.blue_balls.join(',');
+  const latestHtml=g.latestDraw
+    ? `<div class="ht-latest">
+        <div class="ht-latest-row">
+          <span class="lbl">上期中奖号码</span>
+        </div>
+        <div class="ht-latest-balls">${renderMarkedBalls(g.latestDraw.red_balls,g.latestDraw.blue_balls,g.red_balls,g.blue_balls)}</div>
+        <div class="ht-latest-row">命中 <b>${g.latestHits.totalHits}</b> 个号码，当期中奖 <span class="amt">¥${(g.latestPrize?.amount||0).toLocaleString()}</span></div>
+      </div>`
+    : '';
+
+  return `<div class="hticket${cardCls}">
+    <div class="ht-head">
+      <span class="ht-badge ${g.lottery_type}">${lt.name}</span>
+      <span class="ht-status ${statusCls}">${statusTxt}</span>
+      <button class="ht-del" onclick="askDeleteGroup('${gkey}')" aria-label="删除">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6l-1.5 14a2 2 0 0 1-2 2H8.5a2 2 0 0 1-2-2L5 6"></path>
+          <path d="M10 11v6M14 11v6"></path>
+          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="ht-balls">${red}<span class="psep">+</span>${blue}</div>
+    <div class="ht-stats">${statsHtml}</div>
+    ${latestHtml}
+  </div>`;
+}
+
+// ── 删除某组彩票（同号所有期）──
+function askDeleteGroup(gkey){
+  const [ltype, redStr, blueStr] = gkey.split('|');
+  const red = redStr.split(',').map(Number);
+  const blue = blueStr.split(',').map(Number);
+  const lt = LT[ltype];
+
+  // 计算受影响的票数 / 期数
+  const list = JSON.parse(localStorage.getItem('diw_tickets')||'[]');
+  const matched = list.filter(tk =>
+    tk.lottery_type===ltype &&
+    JSON.stringify(tk.red_balls)===JSON.stringify(red) &&
+    JSON.stringify(tk.blue_balls)===JSON.stringify(blue)
+  );
+  const totalPeriods = matched.reduce((s,tk)=>s+tk.count,0);
+
+  const ballHtml =
+    red.map(n=>`<div class="pball r">${n<10?'0'+n:n}</div>`).join('')
+    + '<span class="psep">+</span>'
+    + blue.map(n=>`<div class="pball b">${n<10?'0'+n:n}</div>`).join('');
+
+  document.getElementById('confirm-msg').innerHTML =
+    `将删除该组 <b style="color:${ltype==='dlt'?'#7ACDEE':'#F08070'}">${lt.name}</b> 彩票
+     <div class="cm-balls">${ballHtml}</div>
+     <div class="cm-meta">共 ${totalPeriods} 期记录将被清除，操作不可恢复</div>`;
+
+  document.getElementById('confirm-mask').classList.add('show');
+  document.getElementById('confirm-ok').onclick = ()=> doDeleteGroup(ltype, red, blue);
+}
+
+function doDeleteGroup(ltype, red, blue){
+  const list = JSON.parse(localStorage.getItem('diw_tickets')||'[]');
+  const kept = list.filter(tk => !(
+    tk.lottery_type===ltype &&
+    JSON.stringify(tk.red_balls)===JSON.stringify(red) &&
+    JSON.stringify(tk.blue_balls)===JSON.stringify(blue)
+  ));
+  localStorage.setItem('diw_tickets', JSON.stringify(kept));
+  closeConfirm();
+  showToast('已删除');
+  loadHomeTickets();
+}
+
+function closeConfirm(){
+  document.getElementById('confirm-mask').classList.remove('show');
+}
+
+// 点击遮罩空白处关闭
+document.addEventListener('click', e=>{
+  const mask = document.getElementById('confirm-mask');
+  if(e.target===mask) closeConfirm();
+});
+
+// ── 多期结果 ──
+function showMultiResult(){
+  go('sc-result');
+  const tk=lastTicket, lt=LT[tk.type];
+  const results=multiResults;
+  const ticketRed=tk.red||[];
+  const ticketBlue=tk.blue||[];
+
+  const winRows=results.filter(d=>d.matched&&d.prize_level>0);
+  const hasWin=winRows.length>0;
+
+  document.getElementById('ribbon').className='ribbon '+(hasWin?'win':'loss');
+  document.getElementById('ribbon').textContent=hasWin?'天意归来':'此劫已过';
+
+  const totalAmt=winRows.reduce((s,d)=>s+(d.prize_amount||0),0);
+  document.getElementById('pb').innerHTML=hasWin
+    ?`<div class="prize-amt">¥${totalAmt.toLocaleString()}</div>
+      <div class="prize-note">合计中奖 ${winRows.length} 期</div>`
+    :'';
+
+  document.getElementById('rt').className='r-title '+(hasWin?'win':'loss');
+  document.getElementById('rt').textContent=hasWin
+    ?(winRows.length>=3?'天命归你！本人已蒙天眷'
+     :winRows.length>=2?'运气不浅，天意有加'
+     :'距离暴富，差的只是运气')
+    :`连查 ${results.length} 期，无一中奖`;
+
+  document.getElementById('rs').textContent=
+    `${lt.name} · 第 ${tk.startPeriod} 期起，共 ${results.length} 期`;
+
+  // 期列表
+  const rows=results.map(d=>{
+    const p=d._period;
+    if(d.error) return `<div class="multi-row pending">
+      <span class="multi-period">${p}</span>
+      <span class="multi-tag none">查询失败</span></div>`;
+    if(!d.matched) return `<div class="multi-row pending">
+      <span class="multi-period">${p}</span>
+      <span class="multi-tag none">待开奖</span></div>`;
+    const win=d.prize_level>0;
+    const draw=d.draw||{};
+    const hits=countPositionalHits(ticketRed,ticketBlue,draw.red_balls||[],draw.blue_balls||[]);
+    const drawHtml=renderMarkedBalls(draw.red_balls||[],draw.blue_balls||[],ticketRed,ticketBlue);
+    return `<div class="multi-row ${win?'win':''}">
+      <span class="multi-period">${p}</span>
+      <span class="multi-tag ${win?'win':''}">
+        ${win?d.prize_label:'未中奖'}
+      </span>
+      ${win?`<span class="multi-prize">¥${d.prize_amount.toLocaleString()}</span>`:''}
+      <div class="multi-extra">
+        <div class="multi-extra-row"><span class="lbl">上一期中奖号码</span></div>
+        <div class="multi-extra-balls">${drawHtml}</div>
+        <div class="multi-extra-row">中了 <b>${hits.totalHits}</b> 个，当期中奖 <span class="amt">¥${(d.prize_amount||0).toLocaleString()}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cmp').innerHTML=
+    `<div class="cmp-title">各期对奖结果</div>
+     <div class="multi-list">${rows}</div>`;
+
+  if(hasWin) setTimeout(()=>confetti(winRows.some(d=>d.prize_level<=2)),350);
+}
+
+// ── 结果 ──
+function showError(msg){
+  go('sc-result');
+  document.getElementById('ribbon').className='ribbon loss';
+  document.getElementById('ribbon').textContent='天机受阻';
+  document.getElementById('pb').innerHTML='';
+  document.getElementById('rt').className='r-title loss';
+  document.getElementById('rt').textContent='无法连接开奖数据';
+  document.getElementById('rs').textContent='请检查网络后重试';
+  document.getElementById('cmp').innerHTML=`<div class="err-box">${msg}</div>`;
+}
+
+function showResult(data){
+  go('sc-result');
+  const tk=lastTicket, lt=LT[tk.type];
+
+  if(!data.matched){
+    document.getElementById('ribbon').className='ribbon loss';
+    document.getElementById('ribbon').textContent='天意未至';
+    document.getElementById('pb').innerHTML='';
+    document.getElementById('rt').className='r-title loss';
+    document.getElementById('rt').textContent='此期尚未开奖';
+    document.getElementById('rs').textContent=`第 ${tk.period} 期数据暂未收录\n请在开奖后重新查询`;
+    document.getElementById('cmp').innerHTML='';
+    return;
+  }
+
+  const win=data.prize_level>0, draw=data.draw;
+
+  document.getElementById('ribbon').className='ribbon '+(win?'win':'loss');
+  document.getElementById('ribbon').textContent=win?'天意归来':'此劫已过';
+
+  document.getElementById('pb').innerHTML=win
+    ?`<div class="prize-amt">¥${data.prize_amount.toLocaleString()}</div>
+      <div class="prize-note">${data.prize_label}${data.prize_level<=2?' · 浮动奖以官方公布为准':''}</div>`
+    :'';
+
+  document.getElementById('rt').className='r-title '+(win?'win':'loss');
+  document.getElementById('rt').textContent=win
+    ?(data.prize_level<=2?'天命归你！本人已蒙天眷'
+     :data.prize_level<=4?'运气不浅，天意有加'
+     :'距离暴富，差的只是运气')
+    :'此劫已过，大运将至';
+
+  document.getElementById('rs').textContent=`${lt.name} · 第 ${tk.period} 期\n开奖日：${draw.draw_date}`;
+
+  // 号码对比
+  const mk=(nums,hits,c)=>nums.map(n=>`<div class="cb ${c}${hits.includes(n)?' hit':''}">${n<10?'0'+n:n}</div>`).join('');
+  document.getElementById('cmp').innerHTML=`
+    <div class="cmp-title">开奖对比 · <b>金色为命中</b></div>
+    <div class="cmp-row"><div class="cmp-lbl">开奖号</div><div class="cmp-balls">${mk(draw.red_balls,tk.red,'r')}</div></div>
+    <div class="cmp-row"><div class="cmp-lbl"></div><div class="cmp-balls">${mk(draw.blue_balls,tk.blue,'b')}</div></div>
+    <hr class="cmp-hr">
+    <div class="cmp-row"><div class="cmp-lbl">我的号</div><div class="cmp-balls">${mk(tk.red,draw.red_balls,'r')}</div></div>
+    <div class="cmp-row"><div class="cmp-lbl"></div><div class="cmp-balls">${mk(tk.blue,draw.blue_balls,'b')}</div></div>`;
+
+  if(win) setTimeout(()=>confetti(data.prize_level<=2),350);
+}
+
+// ── 再录一张 ──
+function again(){
+  multiResults=null;
+  resetInput();
+  go('sc-input');
+}
+
+// ── 粒子 ──
+function confetti(big){
+  const cv=document.getElementById('fx');
+  cv.style.display='block'; const ctx=cv.getContext('2d');
+  cv.width=innerWidth; cv.height=innerHeight;
+  const cols=['#D4AF37','#F0E68C','#C0392B','#E74C3C','#2471A3','#fff'];
+  const ps=Array.from({length:big?130:65},()=>({
+    x:Math.random()*cv.width,y:-10,
+    vx:(Math.random()-.5)*5,vy:2+Math.random()*5,vy0:2+Math.random()*5,
+    rot:Math.random()*360,rv:(Math.random()-.5)*12,
+    c:cols[~~(Math.random()*cols.length)],
+    w:5+Math.random()*7,h:5+Math.random()*7,
+    dl:Math.random()*600,
+  }));
+  let t0=null;
+  (function frame(ts){
+    if(!t0)t0=ts; ctx.clearRect(0,0,cv.width,cv.height);
+    let alive=false;
+    ps.forEach(p=>{
+      if(ts-t0<p.dl)return; alive=true;
+      p.x+=p.vx; p.y+=p.vy; p.vy+=.06; p.rot+=p.rv;
+      if(p.y<cv.height){
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+      }
+    });
+    if(alive) requestAnimationFrame(frame); else cv.style.display='none';
+  })();
+}
+
+// ── 分享卡片 ──
+function saveCard(){
+  const cv=document.getElementById('share-canvas'), ctx=cv.getContext('2d');
+  cv.style.display='block'; const W=800,H=560;
+  const win=document.getElementById('ribbon').classList.contains('win');
+  const title=document.getElementById('rt').textContent;
+  const sub=document.getElementById('rs').textContent.split('\n')[0];
+  const amtEl=document.querySelector('.prize-amt');
+
+  ctx.fillStyle='#0D0D1A'; ctx.fillRect(0,0,W,H);
+  for(let i=0;i<180;i++){
+    ctx.beginPath(); ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${.05+Math.random()*.4})`; ctx.fill();
+  }
+  ctx.strokeStyle=win?'#D4AF37':'rgba(255,255,255,.1)'; ctx.lineWidth=1.5; ctx.strokeRect(16,16,W-32,H-32);
+  ctx.strokeStyle=win?'rgba(212,175,55,.2)':'rgba(255,255,255,.04)'; ctx.lineWidth=1; ctx.strokeRect(26,26,W-52,H-52);
+
+  ctx.fillStyle='rgba(255,255,255,.12)'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('我中奖了吗？',W/2,62);
+  ctx.fillStyle=win?'rgba(212,175,55,.25)':'rgba(255,255,255,.06)'; ctx.fillRect(W/2-55,74,110,1);
+
+  // badge
+  ctx.fillStyle=win?'rgba(212,175,55,.1)':'rgba(255,255,255,.04)';
+  rrect(ctx,W/2-48,84,96,28,14); ctx.fill();
+  ctx.fillStyle=win?'#D4AF37':'#555'; ctx.font='12px sans-serif';
+  ctx.fillText(win?'天意归来':'此劫已过',W/2,102);
+
+  ctx.fillStyle=win?'#D4AF37':'#E8E0CC'; ctx.font=`bold ${title.length>8?26:30}px serif`;
+  ctx.fillText(title,W/2,180);
+
+  if(win&&amtEl){
+    ctx.fillStyle='#F0E68C'; ctx.font='bold 58px monospace';
+    ctx.fillText(amtEl.textContent,W/2,275);
+  } else {
+    ctx.strokeStyle='rgba(212,175,55,.08)'; ctx.lineWidth=1;
+    [50,82,114].forEach(r=>{ctx.beginPath();ctx.arc(W/2,295,r,0,Math.PI*2);ctx.stroke();});
+    ctx.fillStyle='rgba(212,175,55,.18)'; ctx.font='34px serif'; ctx.fillText('☯',W/2,310);
+  }
+
+  ctx.fillStyle='rgba(255,255,255,.18)'; ctx.font='14px sans-serif'; ctx.fillText(sub,W/2,H-62);
+  ctx.fillStyle=win?'rgba(212,175,55,.2)':'rgba(255,255,255,.06)'; ctx.fillRect(W/2-70,H-46,140,1);
+  ctx.fillStyle='rgba(255,255,255,.12)'; ctx.font='12px sans-serif';
+  ctx.fillText('拍一张，等天意 · 我中奖了吗',W/2,H-28);
+
+  const a=document.createElement('a');
+  a.download=win?'我中奖了.png':'大运将至.png';
+  a.href=cv.toDataURL('image/png'); a.click(); cv.style.display='none';
+}
+
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+// 初始化
+(()=>{
+  const el=document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const s=document.createElement('div'); s.className='star';
+    const z=Math.random()*2.5+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*5}s;--a:${.04+Math.random()*.1};--b:${.3+Math.random()*.6};`;
+    el.appendChild(s);
+  }
+})();
+renderBalls();
+loadHomeTickets();
+</script>
+</body>
+</html>

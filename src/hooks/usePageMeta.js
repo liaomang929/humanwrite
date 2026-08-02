@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 
 const defaults = {
-  title: 'HumanWrite — 产品矩阵',
-  description: 'HumanWrite 产品矩阵：典萃 ClassiCore（AI 深度阅读伴侣）与净言（AI 文本润色工具）。逻辑驱动 · 技术赋能。',
-  keywords: 'HumanWrite,球之见,典萃,ClassiCore,体育分析,AI阅读,知识胶囊,自媒体创作',
+  title: 'Blake Pierce — 足球数据分析师 / 独立开发者',
+  description: 'Blake Pierce 的个人主页。足球比赛数据分析、AI 工具开发。用数据看懂比赛，用技术创造工具。',
+  keywords: 'Blake Pierce,廖莽,足球分析,足球预测,逻辑透镜,LogicLens,五大联赛预测,体育数据,AI工具,独立开发者',
 }
 
 export function usePageMeta(meta) {

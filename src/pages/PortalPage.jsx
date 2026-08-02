@@ -1,140 +1,43 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { usePageMeta } from '../hooks/usePageMeta'
 
-const PRODUCTS = [
+/* ── Config ──────────────────────────────────────────────── */
+
+const SOCIAL_LINKS = [
   {
-    id: 'logiclens',
-    title: '逻辑透镜',
-    subtitle: 'LogicLens',
-    tagline: '用数据看见比赛',
-    description:
-      '基于历史赛事数据与机器学习模型的个人数据分析项目。覆盖五大联赛，每日更新，数据公开透明。',
-    tags: ['随机森林', '逻辑回归', '神经网络'],
-    href: '/lab',
-    accentColor: '#7c6ef0',
-    status: '每日更新',
-    hero: true,
-    bento: 'hero',
-    preview: 'data-dashboard',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="2.5" />
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-      </svg>
-    ),
+    key: 'wechat',
+    label: '微信',
+    copyId: 'lmloveac',
+    tooltip: '微信号：lmloveac',
+    primary: true,
   },
   {
-    id: 'lottery',
-    title: '我中奖了吗？',
-    subtitle: 'Lottery Check',
-    tagline: '拍一张，等天意',
-    description:
-      '彩票中奖查询工具。支持大乐透、双色球，录入号码即可批量核验。',
-    tags: ['大乐透', '双色球'],
-    href: '/lottery/',
-    accentColor: '#e86c9a',
-    status: '免费可用',
-    bento: 'tall',
-    preview: 'lottery-balls',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <circle cx="8" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="16" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <path d="M3 9h18" />
-      </svg>
-    ),
+    key: 'kuaishou',
+    label: '快手',
+    copyId: '3855839273',
+    tooltip: '快手 ID：3855839273',
   },
   {
-    id: 'jczq',
-    title: '私域粉丝投票',
-    subtitle: 'Fans Vote',
-    tagline: '比赛分享和私域投票',
-    description:
-      '比赛分享和私域投票数据收集，了解粉丝热度与倾向。',
-    tags: ['粉丝投票', '赛事热度'],
-    href: '/demo/fansvote',
-    accentColor: '#f0876c',
-    status: '实时更新',
-    bento: 'wide',
-    preview: 'vote-poll',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-        <path d="M7 3l-1 4 4-1" />
-        <path d="M17 3l1 4-4-1" />
-      </svg>
-    ),
-  },
-  {
-    id: 'classicore',
-    title: '典萃',
-    subtitle: 'ClassiCore',
-    tagline: '解构每一本好书，让知识成为你的创作源力',
-    description:
-      '上传 PDF 自动拆解，生成知识胶囊，一键输出多平台创作脚本。',
-    tags: ['知识胶囊', '深度拆解'],
-    href: '/demo/classicore',
-    accentColor: '#4ecfb3',
-    status: '可用',
-    bento: 'normal',
-    preview: 'book-reader',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="6" height="18" rx="1.5" />
-        <rect x="15" y="3" width="6" height="18" rx="1.5" />
-        <line x1="9" y1="6" x2="15" y2="6" />
-        <line x1="9" y1="10" x2="15" y2="10" />
-        <line x1="9" y1="14" x2="12" y2="14" />
-      </svg>
-    ),
-  },
-  {
-    id: 'aicleaner',
-    title: '净言',
-    subtitle: 'AI Cleaner',
-    tagline: '把 AI 写的东西，改得像真人',
-    description:
-      'AI 文本润色工具。一键优化表达，去 AI 味，让内容更自然流畅。',
-    tags: ['AI润色', '免费使用'],
-    href: '/demo/aicleaner',
-    accentColor: '#f0c46c',
-    status: '免费可用',
-    bento: 'normal',
-    preview: 'ai-text',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 3l2.5 7.5L22 13l-7.5 2.5L12 23l-2.5-7.5L2 13l7.5-2.5z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'shangan',
-    title: '上岸雷达',
-    subtitle: 'Gongkao Radar',
-    tagline: '考公岗位智能匹配',
-    description:
-      '公务员考试岗位智能匹配与信息查询。精准筛选目标岗位，提升备考效率。',
-    tags: ['考公', '岗位匹配'],
-    href: '/kg',
-    accentColor: '#6cb4f0',
-    status: '持续更新',
-    bento: 'normal',
-    preview: 'job-search',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l2.5 6.5L21 11l-6.5 3L12 22l-2.5-8L3 11l6.5-2.5z" />
-        <circle cx="12" cy="11" r="2" />
-      </svg>
-    ),
+    key: 'qq',
+    label: 'QQ',
+    copyId: '68419964',
+    tooltip: 'QQ：68419964',
   },
 ]
 
-const SPOTLIGHT_ORDER = ['logiclens', 'lottery', 'jczq', 'classicore', 'aicleaner', 'shangan']
-const SPOTLIGHT_PRODUCTS = SPOTLIGHT_ORDER.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean)
+const ANALYST_STATS = {
+  recent: { wins: 3, total: 5, profit: '+1.8', label: '近5场推荐' },
+  model: { rate: '72%', label: '赛季综合准确率', extra: '基于逻辑透镜模型' },
+}
+
+const LOTTERY_IMAGES = [
+  '/images/lottery-1.jpg',
+  '/images/lottery-2.jpg',
+  '/images/lottery-3.jpg',
+  '/images/lottery-4.jpg',
+]
+
+/* ── Styles ─────────────────────────────────────────────── */
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
@@ -170,11 +73,10 @@ const STYLES = `
     background:
       radial-gradient(ellipse 80% 55% at 72% -8%,  rgba(124,110,240,.11) 0%, transparent 60%),
       radial-gradient(ellipse 50% 40% at 8% 82%,   rgba(78,207,179,.06)  0%, transparent 50%);
-    transition: background 1s ease;
   }
   .bp-wrap > * { position: relative; z-index: 1; }
 
-  /* nav */
+  /* ── nav ── */
   .bp-nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -199,291 +101,357 @@ const STYLES = `
   .bp-nav-links { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
   .bp-nav-links a {
     color: var(--bp-secondary); text-decoration: none; font-size: 13px;
-    transition: color .2s;
+    transition: color .2s; cursor: pointer;
   }
   .bp-nav-links a:hover { color: var(--bp-primary); }
 
-  /* first screen: hero + manifesto */
-  .bp-first-screen {
+  @media (max-width: 500px) {
+    .bp-nav-links.desktop { display: none; }
+  }
+
+  /* ── hero ── */
+  .bp-hero {
     min-height: 100vh;
     max-width: 1200px; margin: 0 auto;
     display: flex; flex-direction: column; justify-content: center;
-    padding: calc(56px + clamp(1.25rem, 3vw, 2.5rem)) clamp(1.25rem,4vw,3.5rem) clamp(1rem, 2.5vw, 1.75rem);
+    padding: calc(56px + clamp(1.5rem, 3vw, 2.5rem)) clamp(1.25rem,4vw,3.5rem);
   }
 
-  /* spotlight hero */
-  .bp-spotlight {
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    padding: 0;
+  .bp-hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: clamp(1.5rem, 4vw, 3rem);
     align-items: center;
   }
-  .bp-spotlight-copy { position: relative; min-height: 240px; }
-  .bp-spotlight-slide {
-    position: absolute; inset: 0;
+
+  .bp-hero-copy {
     display: flex; flex-direction: column; justify-content: center;
-    opacity: 0; transform: translateY(16px);
-    transition: opacity .65s var(--bp-ease), transform .65s var(--bp-ease);
-    pointer-events: none;
   }
-  .bp-spotlight-slide.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  .bp-sp-eyebrow {
-    font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--_accent, var(--bp-accent)); margin-bottom: 1.2rem;
+
+  .bp-hero-eyebrow {
+    font-size: clamp(11px, 1.2vw, 12px);
+    font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--bp-accent); margin-bottom: 1.2rem;
   }
-  .bp-sp-title {
+
+  .bp-hero-name {
     font-family: var(--bp-display);
-    font-size: clamp(2.8rem,7vw,5.5rem);
-    font-weight: 800; line-height: 1.02; letter-spacing: -.045em;
-    margin-bottom: .6rem;
+    font-size: clamp(1.8rem,5vw,3.5rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -.035em;
+    margin-bottom: .2rem;
   }
-  .bp-sp-subtitle {
-    font-family: var(--bp-display);
-    font-size: clamp(.75rem,1.2vw,.85rem);
-    font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--bp-muted); margin-bottom: 1rem;
+
+  .bp-hero-subname {
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    font-weight: 600;
+    color: var(--bp-primary);
+    margin-bottom: .7rem;
+    letter-spacing: .04em;
   }
-  .bp-sp-tagline {
-    font-size: clamp(1rem,2vw,1.2rem); color: var(--bp-secondary);
-    font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem; max-width: 420px;
+
+  .bp-hero-tagline {
+    font-size: clamp(1rem,2vw,1.2rem);
+    color: var(--bp-secondary);
+    font-weight: 300; line-height: 1.6; margin-bottom: 1.5rem;
+    max-width: 420px;
   }
-  .bp-sp-cta {
+
+  .bp-hero-divider {
+    width: 32px; height: 2px;
+    background: var(--bp-accent);
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .bp-hero-bio {
+    font-size: 14px;
+    color: var(--bp-secondary);
+    line-height: 1.7;
+    max-width: 440px;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+
+  .bp-social-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .bp-social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bp-primary);
+    text-decoration: none;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--bp-border);
+    transition: all .25s var(--bp-ease);
+    cursor: pointer;
+  }
+  .bp-social-btn:hover {
+    background: rgba(255,255,255,.1);
+    border-color: var(--bp-border-h);
+    transform: translateY(-1px);
+  }
+  .bp-social-btn.primary {
+    background: rgba(124,110,240,.15);
+    border-color: rgba(124,110,240,.3);
+    color: var(--bp-accent);
+  }
+  .bp-social-btn.primary:hover {
+    background: rgba(124,110,240,.25);
+    border-color: rgba(124,110,240,.4);
+  }
+
+  .bp-hero-cta {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 13px 26px; background: var(--_accent, var(--bp-accent)); color: #fff;
+    padding: 13px 26px; background: var(--bp-accent); color: #fff;
     text-decoration: none; font-size: 14px; font-weight: 500;
     border-radius: 100px;
     transition: transform .25s, box-shadow .25s;
+    border: none; cursor: pointer; align-self: flex-start;
   }
-  .bp-sp-cta:hover {
+  .bp-hero-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px color-mix(in srgb, var(--_accent, var(--bp-accent)) 35%, transparent);
-  }
-  .bp-sp-dots {
-    display: flex; gap: 8px; margin-top: 1.75rem;
-  }
-  .bp-sp-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--bp-border-h); border: none; cursor: pointer; padding: 0;
-    transition: background .3s, transform .3s;
-  }
-  .bp-sp-dot.active {
-    background: var(--_accent, var(--bp-accent));
-    transform: scale(1.25);
+    box-shadow: 0 12px 32px rgba(124,110,240,.35);
   }
 
-  /* spotlight visual */
-  .bp-spotlight-visual {
+  .bp-hero-visual {
     position: relative; aspect-ratio: 4/3; border-radius: 24px;
     overflow: hidden;
     border: 1px solid var(--bp-border);
     background: var(--bp-card);
   }
-  .bp-spotlight-visual::before {
+  .bp-hero-visual::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse 70% 60% at 50% 30%, color-mix(in srgb, var(--_accent, #7c6ef0) 18%, transparent), transparent);
+    background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(124,110,240,.18), transparent);
+    z-index: 1;
   }
-  .bp-spotlight-visual-inner {
+  .bp-hero-visual-inner {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     padding: 2rem;
-    transition: opacity .65s var(--bp-ease), transform .65s var(--bp-ease);
-    opacity: 0; transform: scale(.96);
-  }
-  .bp-spotlight-visual-inner.active { opacity: 1; transform: scale(1); }
-
-  /* manifesto */
-  .bp-manifesto {
-    width: 100%;
-    padding: clamp(1.25rem, 3vw, 2rem) 0 0;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .bp-manifesto-text {
-    font-family: var(--bp-display);
-    font-size: clamp(1.4rem,3.5vw,2.4rem);
-    font-weight: 700; letter-spacing: -.03em; line-height: 1.35;
-    color: var(--bp-primary);
-    max-width: 720px; margin: 0 auto;
-  }
-  .bp-manifesto-text em {
-    font-style: normal;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(240,235,255,.35);
+    z-index: 2;
   }
 
-  /* section */
+  /* ── section ── */
   .bp-section {
     max-width: 1200px; margin: 0 auto;
-    padding: clamp(2rem,5vw,4rem) clamp(1.25rem,4vw,3.5rem);
+    padding: clamp(3rem,6vw,5rem) clamp(1.25rem,4vw,3.5rem);
   }
   .bp-sec-label {
     font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
     color: var(--bp-muted); margin-bottom: 1.5rem;
   }
 
-  /* bento grid */
-  .bp-bento {
+  /* ── stats ── */
+  .bp-stats-grid {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 14px;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.5rem;
   }
-  .bp-bento-hero   { grid-column: span 8; grid-row: span 2; }
-  .bp-bento-tall   { grid-column: span 4; grid-row: span 2; }
-  .bp-bento-wide   { grid-column: span 8; }
-  .bp-bento-normal { grid-column: span 4; }
 
-  /* bento card */
-  .bp-bento-card {
+  .bp-stat-card {
     background: var(--bp-card);
     border: 1px solid var(--bp-border);
-    border-radius: 20px;
-    text-decoration: none; color: inherit;
-    display: flex; flex-direction: column;
-    overflow: hidden; cursor: pointer;
-    transition: border-color .35s, transform .35s var(--bp-ease), box-shadow .35s;
-    min-height: 200px;
-  }
-  .bp-bento-card:hover {
-    border-color: var(--bp-border-h);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 48px rgba(0,0,0,.4);
-  }
-  .bp-bento-preview {
-    flex: 1; min-height: 120px; position: relative; overflow: hidden;
-    background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 12%, var(--bp-card)), var(--bp-card));
-  }
-  .bp-bento-body { padding: 1.25rem 1.4rem 1.4rem; display: flex; flex-direction: column; gap: .5rem; }
-  .bp-bento-card.bp-bento-hero .bp-bento-preview { min-height: 200px; }
-  .bp-bento-card.bp-bento-tall .bp-bento-preview { min-height: 160px; }
-  .bp-bento-name {
-    font-family: var(--bp-display); font-size: 1.05rem; font-weight: 700;
-    letter-spacing: -.02em; display: flex; align-items: center; gap: 8px;
-  }
-  .bp-bento-en {
-    font-size: .65rem; font-weight: 500; letter-spacing: .06em;
-    text-transform: uppercase; color: var(--bp-muted);
-  }
-  .bp-bento-tagline { font-size: 12.5px; color: var(--bp-secondary); font-weight: 300; }
-  .bp-bento-foot {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: auto; padding-top: .5rem;
-  }
-  .bp-bento-status { font-size: 10.5px; color: var(--bp-muted); display: flex; align-items: center; gap: 5px; }
-  .bp-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ecfb3; }
-  .bp-bento-arrow {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--bp-border-h);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; transition: background .25s, transform .25s;
-  }
-  .bp-bento-card:hover .bp-bento-arrow {
-    background: var(--_accent, var(--bp-accent)); color: #fff; transform: translateX(2px);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    transition: border-color .35s;
   }
 
-  /* preview mockups */
-  .bp-mock { width: 100%; height: 100%; padding: 1.25rem; display: flex; flex-direction: column; gap: 8px; }
-  .bp-mock-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); }
-  .bp-mock-bar.accent { background: color-mix(in srgb, var(--_accent) 50%, transparent); width: 60%; }
-  .bp-mock-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-  .bp-mock-pill {
-    font-size: 9px; padding: 3px 8px; border-radius: 100px;
-    background: rgba(255,255,255,.06); color: var(--bp-secondary);
+  .bp-stat-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--bp-muted);
+    margin-bottom: 4px;
   }
-  .bp-mock-chart { display: flex; align-items: flex-end; gap: 6px; height: 60px; margin-top: auto; }
-  .bp-mock-col {
-    flex: 1; border-radius: 4px 4px 0 0;
-    background: color-mix(in srgb, var(--_accent) 30%, transparent);
-  }
-  .bp-mock-text-before {
-    font-size: 10px; color: var(--bp-muted); text-decoration: line-through;
-    opacity: .6; line-height: 1.5;
-  }
-  .bp-mock-text-after {
-    font-size: 11px; color: var(--bp-primary); line-height: 1.5;
-  }
-  .bp-mock-books { display: flex; gap: 10px; height: 100%; align-items: stretch; }
-  .bp-mock-book {
-    flex: 1; border-radius: 8px; border: 1px solid rgba(255,255,255,.08);
-    background: rgba(255,255,255,.03); padding: 10px;
-    display: flex; flex-direction: column; gap: 5px;
-  }
-  .bp-mock-book-line { height: 4px; border-radius: 2px; background: rgba(255,255,255,.08); }
-  .bp-mock-platforms {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 12px;
-    padding: 1.5rem;
-  }
-  .bp-mock-platform-row {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
-  }
-  .bp-mock-platform {
+  .bp-stat-num {
     font-family: var(--bp-display);
-    font-size: clamp(13px, 1.8vw, 16px);
-    font-weight: 600; letter-spacing: -.02em;
-    padding: 8px 16px; border-radius: 100px;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1;
+    margin-bottom: 2px;
     color: var(--bp-primary);
-    background: rgba(255,255,255,.05);
-    border: 1px solid color-mix(in srgb, var(--_accent) 35%, transparent);
   }
-  .bp-mock-balls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; height: 100%; }
-  .bp-mock-ball {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
-    background: color-mix(in srgb, var(--_accent) 25%, transparent);
-    border: 1px solid color-mix(in srgb, var(--_accent) 40%, transparent);
+  .bp-stat-num.accent { color: var(--bp-accent); }
+  .bp-stat-num.green { color: #4ecfb3; }
+  .bp-stat-label {
+    font-size: 12px;
+    color: var(--bp-secondary);
+    font-weight: 400;
   }
-  .bp-mock-ball.blue { background: rgba(59,130,246,.2); border-color: rgba(59,130,246,.4); color: #93c5fd; }
-  .bp-mock-poll-row { display: flex; align-items: center; gap: 8px; }
-  .bp-mock-poll-label { font-size: 10px; color: var(--bp-secondary); width: 48px; flex-shrink: 0; }
-  .bp-mock-poll-track { flex: 1; height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
-  .bp-mock-poll-fill { height: 100%; border-radius: 3px; background: var(--_accent); }
-  .bp-mock-poll-pct { font-size: 10px; color: var(--bp-muted); width: 28px; text-align: right; }
-  .bp-mock-job-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 10px; border-radius: 8px;
-    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  .bp-stat-sub {
+    font-size: 10.5px;
+    color: var(--bp-muted);
+    margin-top: 2px;
   }
-  .bp-mock-job-title { font-size: 10px; color: var(--bp-primary); font-weight: 500; }
-  .bp-mock-job-meta { font-size: 9px; color: var(--bp-muted); }
 
-  /* about */
-  .bp-about {
-    max-width: 640px; margin: 0 auto; text-align: center;
-    padding: clamp(3rem,8vw,6rem) clamp(1.25rem,4vw,3.5rem);
+  /* ── lottery carousel ── */
+  .bp-carousel {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bp-card);
+    border: 1px solid var(--bp-border);
+    margin-bottom: 1.5rem;
+    aspect-ratio: 3/4;
+    max-height: 70vh;
+  }
+
+  .bp-carousel-slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .8s var(--bp-ease);
+  }
+  .bp-carousel-slide.active { opacity: 1; }
+
+  .bp-carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .bp-carousel-dots {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .bp-carousel-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    border: none; cursor: pointer; padding: 0;
+    transition: background .3s, transform .3s;
+  }
+  .bp-carousel-dot.active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+
+  /* ── 我中奖了吗 工具卡 ── */
+  .bp-lottery-tool {
+    display: flex; align-items: center; gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(212,175,55,.10), rgba(212,175,55,.04));
+    border: 1px solid rgba(212,175,55,.25);
+    border-radius: 18px;
+    text-decoration: none;
+    transition: all .3s var(--bp-ease);
+    margin-bottom: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .bp-lottery-tool:hover {
+    background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(212,175,55,.06));
+    border-color: rgba(212,175,55,.4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(212,175,55,.12);
+  }
+  .bp-lottery-tool::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,.5), transparent);
+  }
+  .bp-lt-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #E8C84A, #C9991A);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #1A1200;
+    box-shadow: 0 4px 16px rgba(212,175,55,.25);
+  }
+  .bp-lt-body { flex: 1; min-width: 0; }
+  .bp-lt-title {
+    font-family: var(--bp-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--bp-primary); letter-spacing: .02em;
+    margin-bottom: 2px;
+  }
+  .bp-lt-desc {
+    font-size: 12px; color: var(--bp-secondary);
+    font-weight: 300;
+  }
+  .bp-lt-arrow {
+    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(212,175,55,.12);
+    display: flex; align-items: center; justify-content: center;
+    color: #D4AF37;
+    font-size: 16px;
+    transition: transform .25s var(--bp-ease);
+  }
+  .bp-lottery-tool:hover .bp-lt-arrow {
+    transform: translateX(4px);
+  }
+
+  /* ── about ── */
+  .bp-about-wrap {
+    max-width: 600px; margin: 0 auto; text-align: center;
+    padding: clamp(3rem,6vw,5rem) clamp(1.25rem,4vw,3.5rem) clamp(2rem,4vw,3rem);
   }
   .bp-about-avatar {
-    width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 1.5rem;
+    width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 1rem;
     background: rgba(124,110,240,.15); border: 1px solid rgba(124,110,240,.25);
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--bp-display); font-size: 1.3rem; font-weight: 700; color: var(--bp-accent);
+    font-family: var(--bp-display); font-size: 1.2rem; font-weight: 700; color: var(--bp-accent);
   }
   .bp-about-name {
-    font-family: var(--bp-display); font-size: 1.5rem; font-weight: 700;
-    letter-spacing: -.02em; margin-bottom: 4px;
+    font-family: var(--bp-display); font-size: 1.3rem; font-weight: 700;
+    letter-spacing: -.02em; margin-bottom: 2px;
   }
-  .bp-about-role { font-size: 13px; color: var(--bp-muted); margin-bottom: 1.5rem; }
+  .bp-about-role {
+    font-size: 13px; color: var(--bp-muted); margin-bottom: .75rem;
+  }
   .bp-about-bio {
-    font-size: 14px; color: var(--bp-secondary); line-height: 1.85;
-    font-weight: 300; margin-bottom: 1rem;
-  }
-  .bp-about-note {
-    font-size: 11.5px; color: var(--bp-muted); font-style: italic;
-    margin-top: 1.5rem; line-height: 1.6;
-  }
-  .bp-about-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 1.5rem; }
-  .bp-about-tag {
-    font-size: 11.5px; padding: 5px 12px; border-radius: 100px;
-    border: 1px solid var(--bp-border-h); color: var(--bp-secondary);
+    font-size: 13.5px; color: var(--bp-secondary); line-height: 1.75;
+    font-weight: 300; max-width: 480px; margin: 0 auto 1.25rem;
   }
 
-  /* footer */
+  .bp-about-list {
+    display: flex; flex-direction: column; gap: 8px;
+    max-width: 360px; margin: 0 auto;
+  }
+  .bp-about-item {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: var(--bp-card);
+    border: 1px solid var(--bp-border);
+    font-size: 13px;
+    color: var(--bp-primary);
+    cursor: pointer;
+    transition: border-color .25s;
+  }
+  .bp-about-item:hover {
+    border-color: var(--bp-border-h);
+  }
+  .bp-about-item-label {
+    color: var(--bp-muted);
+    min-width: 32px;
+  }
+  .bp-about-item-value {
+    font-weight: 500;
+    font-family: 'DM Mono', 'DM Sans', monospace;
+    color: var(--bp-secondary);
+  }
+
+  /* ── footer ── */
   .bp-footer-wrap { border-top: 1px solid var(--bp-border); }
   .bp-footer {
     max-width: 1200px; margin: 0 auto;
@@ -495,14 +463,14 @@ const STYLES = `
   .bp-footer-r a { font-size: 11.5px; color: var(--bp-muted); text-decoration: none; transition: color .2s; }
   .bp-footer-r a:hover { color: var(--bp-secondary); }
 
-  /* scroll reveal */
+  /* ── scroll reveal ── */
   .bp-reveal {
     opacity: 0; transform: translateY(28px);
     transition: opacity .8s var(--bp-ease), transform .8s var(--bp-ease);
   }
   .bp-reveal.bp-visible { opacity: 1; transform: translateY(0); }
 
-  /* animations */
+  /* ── animations ── */
   @keyframes bp-pulse {
     0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--bp-accent); }
     50% { opacity: .7; box-shadow: 0 0 16px var(--bp-accent); }
@@ -510,154 +478,126 @@ const STYLES = `
   @keyframes bp-up { from { opacity:0; transform: translateY(18px) } to { opacity:1; transform: translateY(0) } }
   .bp-nav { animation: bp-up .6s var(--bp-ease) both; }
 
+  /* ── responsive ── */
   @media (max-width: 900px) {
-    .bp-first-screen { min-height: 100svh; justify-content: flex-start; padding-top: calc(56px + 1rem); }
-    .bp-spotlight { grid-template-columns: 1fr; }
-    .bp-spotlight-copy { min-height: 220px; }
-    .bp-spotlight-visual { aspect-ratio: 16/10; }
-    .bp-bento > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
-    .bp-bento-card.bp-bento-hero .bp-bento-preview,
-    .bp-bento-card.bp-bento-tall .bp-bento-preview { min-height: 140px; }
+    .bp-hero-grid { grid-template-columns: 1fr; }
+    .bp-hero-visual { aspect-ratio: 16/10; min-height: 200px; }
+    .bp-carousel { max-height: 70vh; }
+  }
+
+  @media (max-width: 600px) {
+    .bp-stats-grid { grid-template-columns: 1fr; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bp-spotlight-slide, .bp-spotlight-visual-inner, .bp-reveal, .bp-bento-card, .bp-logo-dot {
+    .bp-reveal, .bp-logo-dot {
       animation: none !important; transition: none !important;
     }
-    .bp-spotlight-slide { opacity: 1; transform: none; position: relative; }
-    .bp-spotlight-slide:not(.active) { display: none; }
-    .bp-spotlight-visual-inner { opacity: 1; transform: none; position: relative; }
-    .bp-spotlight-visual-inner:not(.active) { display: none; }
     .bp-reveal { opacity: 1; transform: none; }
   }
 `
 
-function ProductPreview({ type, accentColor }) {
-  const style = { '--_accent': accentColor }
+/* ── Components ─────────────────────────────────────────── */
 
-  switch (type) {
-    case 'data-dashboard':
-      return (
-        <div className="bp-mock" style={style}>
-          <div className="bp-mock-pills">
-            {['英超', '西甲', '意甲'].map(l => <span key={l} className="bp-mock-pill">{l}</span>)}
-          </div>
-          <div className="bp-mock-bar accent" />
-          <div className="bp-mock-bar" style={{ width: '80%' }} />
-          <div className="bp-mock-bar" style={{ width: '45%' }} />
-          <div className="bp-mock-chart">
-            {[40, 65, 45, 80, 55, 70, 50].map((h, i) => (
-              <div key={i} className="bp-mock-col" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-        </div>
-      )
-    case 'ai-text':
-      return (
-        <div className="bp-mock" style={style}>
-          <div className="bp-mock-text-before">首先，我们需要明确一点。其次，值得注意的是……</div>
-          <div className="bp-mock-text-after">说白了，核心就一件事——把 AI 味去掉，像人写的。</div>
-          <div className="bp-mock-bar accent" style={{ marginTop: 'auto' }} />
-        </div>
-      )
-    case 'book-reader':
-      return (
-        <div className="bp-mock bp-mock-platforms" style={style}>
-          <div className="bp-mock-platform-row">
-            {['小红书', '抖音', '公众号'].map(p => (
-              <span key={p} className="bp-mock-platform">{p}</span>
-            ))}
-          </div>
-        </div>
-      )
-    case 'lottery-balls':
-      return (
-        <div className="bp-mock bp-mock-balls" style={style}>
-          {['03', '12', '18', '25', '33'].map(n => <div key={n} className="bp-mock-ball">{n}</div>)}
-          {['07', '11'].map(n => <div key={n} className="bp-mock-ball blue">{n}</div>)}
-        </div>
-      )
-    case 'vote-poll':
-      return (
-        <div className="bp-mock" style={style}>
-          {[{ l: '主胜', p: 62 }, { l: '平局', p: 23 }, { l: '客胜', p: 15 }].map(r => (
-            <div key={r.l} className="bp-mock-poll-row">
-              <span className="bp-mock-poll-label">{r.l}</span>
-              <div className="bp-mock-poll-track"><div className="bp-mock-poll-fill" style={{ width: `${r.p}%` }} /></div>
-              <span className="bp-mock-poll-pct">{r.p}%</span>
-            </div>
-          ))}
-        </div>
-      )
-    case 'job-search':
-      return (
-        <div className="bp-mock" style={style}>
-          <div className="bp-mock-pills">
-            {['武汉', '本科', '行政'].map(t => <span key={t} className="bp-mock-pill">{t}</span>)}
-          </div>
-          {['湖北省直机关 · 综合管理', '武汉市江岸区 · 文秘岗'].map(j => (
-            <div key={j} className="bp-mock-job-row">
-              <div>
-                <div className="bp-mock-job-title">{j}</div>
-                <div className="bp-mock-job-meta">匹配度 92%</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )
-    default:
-      return null
-  }
-}
-
-function BentoCard({ product }) {
-  const bentoClass = `bp-bento-${product.bento || 'normal'}`
+function CopyToast({ show }) {
+  if (!show) return null
   return (
-    <a
-      href={product.href}
-      className={`bp-bento-card ${bentoClass} bp-reveal`}
-      style={{ '--_accent': product.accentColor }}
+    <div
+      style={{
+        position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
+        zIndex: 200, padding: '10px 20px', borderRadius: '100px',
+        background: 'rgba(17,17,24,.95)', border: '1px solid rgba(255,255,255,.1)',
+        color: '#f0eeff', fontSize: '13px', fontWeight: 500,
+        backdropFilter: 'blur(12px)',
+        animation: 'bp-up .3s var(--bp-ease) both',
+      }}
     >
-      <div className="bp-bento-preview">
-        <ProductPreview type={product.preview} accentColor={product.accentColor} />
-      </div>
-      <div className="bp-bento-body">
-        <div className="bp-bento-name">
-          {product.title}
-          <span className="bp-bento-en">{product.subtitle}</span>
-        </div>
-        <div className="bp-bento-tagline">{product.tagline}</div>
-        <div className="bp-bento-foot">
-          <div className="bp-bento-status"><span className="bp-dot" />{product.status}</div>
-          <div className="bp-bento-arrow">→</div>
-        </div>
-      </div>
-    </a>
+      ✅ 已复制
+    </div>
   )
 }
 
-export default function PortalPage() {
-  const [activeSlide, setActiveSlide] = useState(0)
+function LotteryCarousel({ images }) {
+  const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
 
-  const current = SPOTLIGHT_PRODUCTS[activeSlide]
-
-  usePageMeta({
-    title: 'Blake Pierce — 独立开发者 / 数据爱好者',
-    description:
-      '个人产品门户：逻辑透镜、典萃 ClassiCore、净言 AI Cleaner、我中奖了吗、上岸雷达、私域粉丝投票。',
-    keywords: 'Blake Pierce,廖莽,LogicLens,数据实验室,典萃,ClassiCore,净言,我中奖了吗,大乐透,双色球,上岸雷达,私域粉丝投票',
-  })
-
-  const nextSlide = useCallback(() => {
-    setActiveSlide(i => (i + 1) % SPOTLIGHT_PRODUCTS.length)
-  }, [])
+  const next = useCallback(() => {
+    setActive(i => (i + 1) % images.length)
+  }, [images.length])
 
   useEffect(() => {
-    if (paused) return
-    const timer = setInterval(nextSlide, 5500)
-    return () => clearInterval(timer)
-  }, [paused, nextSlide])
+    if (paused || images.length <= 1) return
+    const t = setInterval(next, 4000)
+    return () => clearInterval(t)
+  }, [paused, next, images.length])
+
+  if (!images.length) return null
+
+  return (
+    <div
+      className="bp-carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {images.map((src, i) => (
+        <div key={i} className={`bp-carousel-slide${i === active ? ' active' : ''}`}>
+          <img
+            src={src}
+            alt={`中奖实票 ${i + 1}`}
+            className="bp-carousel-img"
+            loading={i === 0 ? 'eager' : 'lazy'}
+          />
+        </div>
+      ))}
+      {images.length > 1 && (
+        <div className="bp-carousel-dots">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`bp-carousel-dot${i === active ? ' active' : ''}`}
+              onClick={() => setActive(i)}
+              aria-label={`第 ${i + 1} 张`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DataDashboardPreview() {
+  return (
+    <div className="bp-mock" style={{ width: '100%', height: '100%', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div className="bp-mock-pills" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        {['英超', '西甲', '意甲'].map(l => (
+          <span key={l} style={{ fontSize: '9px', padding: '3px 8px', borderRadius: '100px', background: 'rgba(255,255,255,.06)', color: 'var(--bp-secondary)' }}>{l}</span>
+        ))}
+      </div>
+      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(124,110,240,.5)', width: '60%' }} />
+      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,.08)', width: '80%' }} />
+      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,.08)', width: '45%' }} />
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '60px', marginTop: 'auto' }}>
+        {[40, 65, 45, 80, 55, 70, 50].map((h, i) => (
+          <div key={i} style={{ flex: 1, borderRadius: '4px 4px 0 0', background: 'rgba(124,110,240,.3)', height: `${h}%` }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── Page ───────────────────────────────────────────────── */
+
+export default function PortalPage() {
+  const [copied, setCopied] = useState(false)
+
+  usePageMeta({
+    title: 'Blake Pierce — 足球数据分析师 / 独立开发者',
+    description:
+      'Blake Pierce 的个人主页。足球比赛数据分析、AI 工具开发。用数据看懂比赛，用技术创造工具。',
+    keywords:
+      'Blake Pierce,廖莽,足球分析,足球预测,逻辑透镜,LogicLens,五大联赛预测,体育数据',
+  })
 
   useEffect(() => {
     const els = document.querySelectorAll('.bp-reveal')
@@ -669,11 +609,27 @@ export default function PortalPage() {
     return () => obs.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (copied) {
+      const t = setTimeout(() => setCopied(false), 1800)
+      return () => clearTimeout(t)
+    }
+  }, [copied])
+
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth'
+    return () => { document.documentElement.style.scrollBehavior = '' }
+  }, [])
+
+  const handleCopy = (id) => {
+    navigator.clipboard.writeText(id).then(() => setCopied(true))
+  }
+
   return (
     <>
       <style>{STYLES}</style>
 
-      <div className="bp-wrap" style={{ '--_accent': current?.accentColor }}>
+      <div className="bp-wrap">
 
         <header className="bp-nav">
           <div className="bp-nav-inner">
@@ -681,94 +637,117 @@ export default function PortalPage() {
               <span className="bp-logo-dot" />
               Blake Pierce
             </a>
-            <ul className="bp-nav-links">
-              <li><a href="#products">产品</a></li>
-              <li><a href="#about">关于</a></li>
+            <ul className="bp-nav-links desktop">
+              <li><a href="#stats">战绩</a></li>
+              <li><a href="#about">联系</a></li>
             </ul>
           </div>
         </header>
 
-        {/* FIRST SCREEN: SPOTLIGHT + MANIFESTO */}
-        <div className="bp-first-screen">
-        <section
-          className="bp-spotlight"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          <div className="bp-spotlight-copy">
-            {SPOTLIGHT_PRODUCTS.map((p, i) => (
-              <div
-                key={p.id}
-                className={`bp-spotlight-slide${i === activeSlide ? ' active' : ''}`}
-                style={{ '--_accent': p.accentColor }}
-              >
-                <div className="bp-sp-eyebrow">{p.status}</div>
-                <h1 className="bp-sp-title">{p.title}</h1>
-                <div className="bp-sp-subtitle">{p.subtitle}</div>
-                <p className="bp-sp-tagline">{p.tagline}</p>
-                <a href={p.href} className="bp-sp-cta">立即体验 →</a>
-                <div className="bp-sp-dots">
-                  {SPOTLIGHT_PRODUCTS.map((_, di) => (
-                    <button
-                      key={di}
-                      type="button"
-                      className={`bp-sp-dot${di === activeSlide ? ' active' : ''}`}
-                      style={{ '--_accent': SPOTLIGHT_PRODUCTS[di].accentColor }}
-                      aria-label={`切换到 ${SPOTLIGHT_PRODUCTS[di].title}`}
-                      onClick={() => setActiveSlide(di)}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* ═══ 第一屏：HERO ═══ */}
+        <section className="bp-hero">
+          <div className="bp-hero-grid">
+            <div className="bp-hero-copy">
+              <div className="bp-hero-eyebrow">足球数据分析师 / 独立工作室</div>
+              <h1 className="bp-hero-name">Blake Pierce</h1>
+              <div className="bp-hero-subname">一包华子</div>
+              <p className="bp-hero-tagline">用数据看懂比赛，用逻辑解读机构意图。</p>
+              <div className="bp-hero-divider" />
+              <p className="bp-hero-bio">
+                分析足球比赛，也写代码做数据产品。
+                用机器学习解读比赛，用实战验证判断。
+              </p>
 
-          <div className="bp-spotlight-visual" style={{ '--_accent': current?.accentColor }}>
-            {SPOTLIGHT_PRODUCTS.map((p, i) => (
-              <div
-                key={p.id}
-                className={`bp-spotlight-visual-inner${i === activeSlide ? ' active' : ''}`}
-                style={{ '--_accent': p.accentColor }}
-              >
-                <ProductPreview type={p.preview} accentColor={p.accentColor} />
+              <div className="bp-social-row">
+                {SOCIAL_LINKS.map(s => (
+                  <button
+                    key={s.key}
+                    className={`bp-social-btn${s.primary ? ' primary' : ''}`}
+                    onClick={() => handleCopy(s.copyId)}
+                    title={s.tooltip}
+                  >
+                    <span>{s.label}</span>
+                  </button>
+                ))}
               </div>
-            ))}
+
+              <a href="/lab" className="bp-hero-cta">
+                探索逻辑透镜 →
+              </a>
+            </div>
+
+            <div className="bp-hero-visual">
+              <div className="bp-hero-visual-inner">
+                <DataDashboardPreview />
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* MANIFESTO */}
-        <div className="bp-manifesto bp-reveal">
-          <p className="bp-manifesto-text">
-            6 个工具，1 个目标：<br />让数据和技术，<em>真正有用</em>
-          </p>
-        </div>
-        </div>
+        {/* ═══ 第二屏：战绩展示 ═══ */}
+        <section id="stats" className="bp-section" style={{ scrollMarginTop: '72px' }}>
+          <div className="bp-sec-label bp-reveal">战绩展示</div>
 
-        {/* BENTO PRODUCTS */}
-        <main id="products" className="bp-section" style={{ scrollMarginTop: '72px' }}>
-          <div className="bp-sec-label bp-reveal">全部产品</div>
-          <div className="bp-bento">
-            {PRODUCTS.map(p => <BentoCard key={p.id} product={p} />)}
+          <div className="bp-stats-grid bp-reveal">
+            <div className="bp-stat-card">
+              <div className="bp-stat-eyebrow">{ANALYST_STATS.recent.label}</div>
+              <div className="bp-stat-num green">
+                {ANALYST_STATS.recent.wins}/{ANALYST_STATS.recent.total}
+              </div>
+              <div className="bp-stat-label">
+                {ANALYST_STATS.recent.profit} 净赢
+              </div>
+            </div>
+            <div className="bp-stat-card">
+              <div className="bp-stat-eyebrow">数据模型</div>
+              <div className="bp-stat-num accent">{ANALYST_STATS.model.rate}</div>
+              <div className="bp-stat-label">{ANALYST_STATS.model.label}</div>
+              <div className="bp-stat-sub">{ANALYST_STATS.model.extra}</div>
+            </div>
           </div>
-        </main>
 
-        {/* ABOUT */}
-        <section id="about" className="bp-about bp-reveal" style={{ scrollMarginTop: '72px' }}>
+          <div className="bp-reveal">
+            <LotteryCarousel images={LOTTERY_IMAGES} />
+          </div>
+
+          {/* ── 我中奖了吗 工具入口 ── */}
+          <a href="/lottery/" className="bp-lottery-tool bp-reveal" target="_self">
+            <div className="bp-lt-icon">🎰</div>
+            <div className="bp-lt-body">
+              <div className="bp-lt-title">我中奖了吗？</div>
+              <div className="bp-lt-desc">录入彩票号码，一键查询双色球 / 大乐透开奖结果</div>
+            </div>
+            <div className="bp-lt-arrow">→</div>
+          </a>
+
+        </section>
+
+        {/* ═══ 第三屏：关于 / 联系 ═══ */}
+        <section id="about" className="bp-about-wrap bp-reveal" style={{ scrollMarginTop: '72px' }}>
           <div className="bp-about-avatar">BP</div>
           <div className="bp-about-name">Blake Pierce</div>
-          <div className="bp-about-role">独立开发者 · 数据爱好者</div>
+          <div className="bp-about-role">足球数据分析师 · 独立开发者</div>
           <p className="bp-about-bio">
-            热衷于用数据、机器学习和 AI 技术，构建能够解决实际问题的工具。
-            目前维护 6 款产品，覆盖体育数据分析、AI 阅读与写作、考公岗位匹配、私域运营等领域。
+            分析比赛，也做数据产品。如果你对足球分析感兴趣，欢迎联系。
           </p>
-          <div className="bp-about-tags">
-            {['体育数据', 'AI 写作', '考公工具', '私域运营', '内容创作', '彩票查询'].map(c => (
-              <span key={c} className="bp-about-tag">{c}</span>
-            ))}
+
+          <div className="bp-about-list">
+            <div className="bp-about-item" onClick={() => handleCopy('lmloveac')}>
+              <span className="bp-about-item-label">💬</span>
+              <span className="bp-about-item-value">lmloveac</span>
+              <span style={{ color: 'var(--bp-muted)', fontSize: '11px', marginLeft: 'auto' }}>微信</span>
+            </div>
+            <div className="bp-about-item" onClick={() => handleCopy('3855839273')}>
+              <span className="bp-about-item-label">🎬</span>
+              <span className="bp-about-item-value">3855839273</span>
+              <span style={{ color: 'var(--bp-muted)', fontSize: '11px', marginLeft: 'auto' }}>快手</span>
+            </div>
+            <div className="bp-about-item" onClick={() => handleCopy('68419964')}>
+              <span className="bp-about-item-label">💎</span>
+              <span className="bp-about-item-value">68419964</span>
+              <span style={{ color: 'var(--bp-muted)', fontSize: '11px', marginLeft: 'auto' }}>QQ</span>
+            </div>
           </div>
-          <p className="bp-about-note">
-            本平台所有数据仅供学习交流参考，不构成任何形式的建议或决策依据。
-          </p>
         </section>
 
         <div className="bp-footer-wrap">
@@ -792,6 +771,8 @@ export default function PortalPage() {
             </div>
           </footer>
         </div>
+
+        <CopyToast show={copied} />
 
       </div>
     </>

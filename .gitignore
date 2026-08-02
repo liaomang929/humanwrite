@@ -3,3 +3,5 @@ dist/
 server.js
 .vercel/
 .env
+*.bak
+public/lottery/index.*.html

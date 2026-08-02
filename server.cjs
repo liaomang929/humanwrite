@@ -70,7 +70,10 @@ const mimes = {
   '.css': 'text/css',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.json': 'application/json',
+  '.mp4': 'video/mp4',
 };
 
 function json(res, data, code) {
@@ -78,29 +81,38 @@ function json(res, data, code) {
   res.end(JSON.stringify(data));
 }
 
-// --- helpers ---
-function dateStr(d) {
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+// --- helpers (all dates in Asia/Shanghai) ---
+function shanghaiParts(d = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(d);
+  const get = (t) => parts.find(p => p.type === t)?.value;
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: parseInt(get('hour'), 10),
+    minute: parseInt(get('minute'), 10),
+  };
 }
 function todayStr() {
-  const n = new Date();
-  return dateStr(n);
+  const p = shanghaiParts();
+  return `${p.year}-${p.month}-${p.day}`;
 }
-// Before 11:30 CST, return yesterday's date (fallback when today has no data)
 function yesterdayStr() {
-  const n = new Date();
-  return dateStr(new Date(n.getFullYear(), n.getMonth(), n.getDate() - 1));
+  const p = shanghaiParts(new Date(Date.now() - 86400000));
+  return `${p.year}-${p.month}-${p.day}`;
 }
 function effectiveToday() {
-  const n = new Date();
-  const h = n.getHours(), mi = n.getMinutes();
-  if (h < 11 || (h === 11 && mi < 30)) return yesterdayStr();
+  const p = shanghaiParts();
+  if (p.hour < 11 || (p.hour === 11 && p.minute < 30)) return yesterdayStr();
   return todayStr();
 }
 function isBefore1130() {
-  const n = new Date();
-  const h = n.getHours(), mi = n.getMinutes();
-  return h < 11 || (h === 11 && mi < 30);
+  const p = shanghaiParts();
+  return p.hour < 11 || (p.hour === 11 && p.minute < 30);
 }
 
 // ── Analytics ───────────────────────────────────────────────
@@ -376,6 +388,10 @@ http.createServer((req, res) => {
     fp = path.join(PORTAL_ROOT, fp);
   if (!fp.startsWith(PORTAL_ROOT)) { res.writeHead(403); res.end(); return; }
   const ext = path.extname(fp);
+    const ext2 = path.extname(fp);
+  const isMedia = ['.jpg', '.jpeg', '.png', '.svg', '.mp4'].includes(ext2);
+  const cc = isMedia ? 'private, max-age=86400' : 'no-cache';
+
   fs.readFile(fp, (err, data) => {
     if (err) {
       if (!path.extname(req.url)) {
@@ -387,7 +403,7 @@ http.createServer((req, res) => {
       }
       res.writeHead(404); res.end('Not Found'); return;
     }
-    res.writeHead(200, { 'Content-Type': mimes[ext] || 'application/octet-stream' });
+    res.writeHead(200, { 'Content-Type': mimes[ext] || 'application/octet-stream', 'Cache-Control': cc });
     res.end(data);
   });
 }).listen(port, () => console.log('Server running on port ' + port));

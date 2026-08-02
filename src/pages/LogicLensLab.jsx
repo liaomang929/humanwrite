@@ -20,6 +20,11 @@ const LEAGUE_DISPLAY = {
   'Japan-J-1': '日职',
   'Netherlands-Eredivisie': '荷甲',
   'Portugal-Liga-1': '葡超',
+  'FIFA-World-Cup': '世界杯',
+}
+
+function shanghaiDateStr(d = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(d)
 }
 
 const LEAGUE_FLAG = {
@@ -568,22 +573,21 @@ export default function LogicLensLab() {
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null)
     try {
-      const now = new Date()
-      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-      const [leaguesRes, fixturesRes, predictionsRes, statsRes, yesterdayRes] = await Promise.all([
+      const [leaguesRes, fixturesRes, statsRes, yesterdayRes] = await Promise.all([
         fetch('/api/logiclens/leagues').catch(() => ({ ok: false })),
         fetch('/api/logiclens/fixtures/today').catch(() => ({ ok: false })),
-        fetch(`/api/logiclens/precomputed/${dateStr}`).catch(() => ({ ok: false })),
         fetch('/api/logiclens/stats').catch(() => ({ ok: false })),
         fetch('/api/logiclens/yesterday').catch(() => ({ ok: false })),
       ])
-      const [leagues, fixtures, predictions, stats, yesterday] = await Promise.all([
+      const [leagues, fixtures, stats, yesterday] = await Promise.all([
         leaguesRes.ok ? leaguesRes.json() : { leagues: [] },
-        fixturesRes.ok ? fixturesRes.json() : { fixtures: [] },
-        predictionsRes.ok ? predictionsRes.json() : { predictions: {} },
+        fixturesRes.ok ? fixturesRes.json() : { fixtures: [], date: shanghaiDateStr() },
         statsRes.ok ? statsRes.json() : null,
         yesterdayRes.ok ? yesterdayRes.json() : { matches: [] },
       ])
+      const matchDate = fixtures.date || shanghaiDateStr()
+      const predictionsRes = await fetch(`/api/logiclens/precomputed/${matchDate}`).catch(() => ({ ok: false }))
+      const predictions = predictionsRes.ok ? await predictionsRes.json() : { predictions: {} }
       setYesterdayMatches(yesterday.matches ?? [])
       setData({
         leagues: leagues.leagues ?? [],
