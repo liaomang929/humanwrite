@@ -13,27 +13,27 @@ const PAGE_LABELS = {
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap');
-  .st-wrap { min-height:100vh; background:#0a0a0f; color:#f0eeff; font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased; padding:2rem clamp(1rem,4vw,2.5rem) 3rem; }
+  .st-wrap { min-height:100vh; background:#000000; color:#f5f5f7; font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased; padding:2rem clamp(1rem,4vw,2.5rem) 3rem; }
   .st-inner { max-width:960px; margin:0 auto; }
   .st-h1 { font-family:'Syne',sans-serif; font-size:clamp(1.5rem,3vw,2rem); font-weight:800; letter-spacing:-.03em; margin-bottom:.35rem; }
-  .st-sub { font-size:13px; color:#8b85a8; margin-bottom:2rem; }
+  .st-sub { font-size:13px; color:#86868b; margin-bottom:2rem; }
   .st-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:2rem; }
-  .st-card { background:#111118; border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:1.25rem; }
+  .st-card { background:#131316; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:1.25rem; }
   .st-num { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; letter-spacing:-.03em; line-height:1; margin-bottom:4px; }
-  .st-lbl { font-size:11px; color:#4a4666; letter-spacing:.06em; text-transform:uppercase; }
-  .st-sec-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1rem; color:#f0eeff; }
-  .st-chart { display:flex; align-items:flex-end; gap:6px; height:120px; margin-bottom:2rem; padding-top:1rem; border-bottom:1px solid rgba(255,255,255,.07); }
+  .st-lbl { font-size:11px; color:#6e6e73; letter-spacing:.06em; text-transform:uppercase; }
+  .st-sec-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1rem; color:#f5f5f7; }
+  .st-chart { display:flex; align-items:flex-end; gap:6px; height:120px; margin-bottom:2rem; padding-top:1rem; border-bottom:1px solid rgba(255,255,255,.08); }
   .st-bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0; }
-  .st-bar { width:100%; max-width:32px; border-radius:4px 4px 0 0; background:linear-gradient(180deg,#7c6ef0,#4ecfb3); min-height:4px; transition:height .3s; }
-  .st-bar-lbl { font-size:9px; color:#4a4666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .st-bar { width:100%; max-width:32px; border-radius:4px 4px 0 0; background:linear-gradient(180deg,#0a84ff,#34c759); min-height:4px; transition:height .3s; }
+  .st-bar-lbl { font-size:9px; color:#6e6e73; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
   .st-table { width:100%; border-collapse:collapse; font-size:13px; }
-  .st-table th { text-align:left; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:#4a4666; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.07); }
-  .st-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); color:#8b85a8; }
-  .st-table td:first-child { color:#f0eeff; font-weight:500; }
+  .st-table th { text-align:left; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:#6e6e73; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .st-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); color:#86868b; }
+  .st-table td:first-child { color:#f5f5f7; font-weight:500; }
   .st-table tr:hover td { background:rgba(255,255,255,.02); }
-  .st-err { text-align:center; padding:4rem 1rem; color:#8b85a8; }
-  .st-err code { display:block; margin-top:1rem; font-size:12px; color:#7c6ef0; background:rgba(124,110,240,.1); padding:8px 14px; border-radius:8px; }
-  .st-updated { font-size:11px; color:#4a4666; margin-top:2rem; text-align:center; }
+  .st-err { text-align:center; padding:4rem 1rem; color:#86868b; }
+  .st-err code { display:block; margin-top:1rem; font-size:12px; color:#0a84ff; background:rgba(10,132,255,.12); padding:8px 14px; border-radius:8px; }
+  .st-updated { font-size:11px; color:#6e6e73; margin-top:2rem; text-align:center; }
 `
 
 function labelForPath(path) {
@@ -139,7 +139,7 @@ export default function StatsPage() {
                 <tbody>
                   {data.pages.map(row => (
                     <tr key={row.path}>
-                      <td>{labelForPath(row.path)}<span style={{ color: '#4a4666', fontSize: 11, marginLeft: 8 }}>{row.path}</span></td>
+                      <td>{labelForPath(row.path)}<span style={{ color: '#6e6e73', fontSize: 11, marginLeft: 8 }}>{row.path}</span></td>
                       <td>{row.pv.toLocaleString()}</td>
                       <td>{row.uv.toLocaleString()}</td>
                     </tr>

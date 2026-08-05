@@ -46,7 +46,7 @@ const PRODUCTS = [
     desc: '亚盘拆盘，单场 + 二串一实盘记录，盘口思路每日更新。',
     href: '/odds/',
     emoji: '⚽',
-    accent: '#4ecfb3',
+    accent: '#64d2ff',
     featured: true,
   },
   {
@@ -65,7 +65,7 @@ const PRODUCTS = [
     desc: '单场 / 2串1 战绩记录与流量打法沉淀。',
     href: '/xianyu/',
     emoji: '🗺️',
-    accent: '#5dade2',
+    accent: '#0a84ff',
   },
 ]
 
@@ -80,15 +80,16 @@ const LOTTERY_IMAGES = [
 
 const STYLES = `
   :root {
-    --bp-bg:        #0a0a0f;
-    --bp-card:      #111118;
-    --bp-card-h:    #16161f;
-    --bp-primary:   #f0eeff;
-    --bp-secondary: #8b85a8;
-    --bp-muted:     #4a4666;
-    --bp-accent:    #7c6ef0;
-    --bp-border:    rgba(255,255,255,0.07);
-    --bp-border-h:  rgba(255,255,255,0.13);
+    --bp-bg:        #000000;
+    --bp-card:      #131316;
+    --bp-card-h:    #1a1a1e;
+    --bp-primary:   #f5f5f7;
+    --bp-secondary: #86868b;
+    --bp-muted:     #6e6e73;
+    --bp-accent:    #0a84ff;
+    --bp-green:     #34c759;
+    --bp-border:    rgba(255,255,255,0.08);
+    --bp-border-h:  rgba(255,255,255,0.16);
     --bp-display:   'Syne', sans-serif;
     --bp-body:      'DM Sans', sans-serif;
     --bp-ease:      cubic-bezier(.23,1,.32,1);
@@ -108,8 +109,8 @@ const STYLES = `
     content: '';
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background:
-      radial-gradient(ellipse 80% 55% at 72% -8%,  rgba(124,110,240,.11) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 8% 82%,   rgba(78,207,179,.06)  0%, transparent 50%);
+      radial-gradient(ellipse 80% 55% at 72% -8%,  rgba(10,132,255,.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 8% 82%,   rgba(100,210,255,.04) 0%, transparent 50%);
   }
   .bp-wrap > * { position: relative; z-index: 1; }
 
@@ -199,26 +200,13 @@ const STYLES = `
     transform: translateY(-1px);
   }
   .bp-social-btn.primary {
-    background: rgba(124,110,240,.15);
-    border-color: rgba(124,110,240,.3);
+    background: rgba(10,132,255,.15);
+    border-color: rgba(10,132,255,.35);
     color: var(--bp-accent);
   }
   .bp-social-btn.primary:hover {
-    background: rgba(124,110,240,.25);
-    border-color: rgba(124,110,240,.4);
-  }
-
-  .bp-hero-cta {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 13px 26px; background: var(--bp-accent); color: #fff;
-    text-decoration: none; font-size: 14px; font-weight: 500;
-    border-radius: 100px;
-    transition: transform .25s, box-shadow .25s;
-    border: none; cursor: pointer; align-self: flex-start;
-  }
-  .bp-hero-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(124,110,240,.35);
+    background: rgba(10,132,255,.25);
+    border-color: rgba(10,132,255,.45);
   }
 
   /* ── products bento ── */
@@ -325,7 +313,7 @@ const STYLES = `
     color: var(--bp-primary);
   }
   .bp-stat-num.accent { color: var(--bp-accent); }
-  .bp-stat-num.green { color: #4ecfb3; }
+  .bp-stat-num.green { color: var(--bp-green); }
   .bp-stat-label {
     font-size: 12px;
     color: var(--bp-secondary);
@@ -386,60 +374,6 @@ const STYLES = `
     transform: scale(1.3);
   }
 
-  /* ── 我中奖了吗 工具卡 ── */
-  .bp-lottery-tool {
-    display: flex; align-items: center; gap: 1.25rem;
-    padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, rgba(212,175,55,.10), rgba(212,175,55,.04));
-    border: 1px solid rgba(212,175,55,.25);
-    border-radius: 18px;
-    text-decoration: none;
-    transition: all .3s var(--bp-ease);
-    margin-bottom: 1.5rem;
-    position: relative; overflow: hidden;
-  }
-  .bp-lottery-tool:hover {
-    background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(212,175,55,.06));
-    border-color: rgba(212,175,55,.4);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(212,175,55,.12);
-  }
-  .bp-lottery-tool::before {
-    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212,175,55,.5), transparent);
-  }
-  .bp-lt-icon {
-    flex-shrink: 0;
-    width: 48px; height: 48px; border-radius: 14px;
-    background: linear-gradient(135deg, #E8C84A, #C9991A);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; color: #1A1200;
-    box-shadow: 0 4px 16px rgba(212,175,55,.25);
-  }
-  .bp-lt-body { flex: 1; min-width: 0; }
-  .bp-lt-title {
-    font-family: var(--bp-display);
-    font-size: 16px; font-weight: 700;
-    color: var(--bp-primary); letter-spacing: .02em;
-    margin-bottom: 2px;
-  }
-  .bp-lt-desc {
-    font-size: 12px; color: var(--bp-secondary);
-    font-weight: 300;
-  }
-  .bp-lt-arrow {
-    flex-shrink: 0;
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(212,175,55,.12);
-    display: flex; align-items: center; justify-content: center;
-    color: #D4AF37;
-    font-size: 16px;
-    transition: transform .25s var(--bp-ease);
-  }
-  .bp-lottery-tool:hover .bp-lt-arrow {
-    transform: translateX(4px);
-  }
-
   /* ── about ── */
   .bp-about-wrap {
     max-width: 600px; margin: 0 auto; text-align: center;
@@ -447,7 +381,7 @@ const STYLES = `
   }
   .bp-about-avatar {
     width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 1rem;
-    background: rgba(124,110,240,.15); border: 1px solid rgba(124,110,240,.25);
+    background: rgba(10,132,255,.15); border: 1px solid rgba(10,132,255,.3);
     display: flex; align-items: center; justify-content: center;
     font-family: var(--bp-display); font-size: 1.2rem; font-weight: 700; color: var(--bp-accent);
   }
@@ -544,7 +478,7 @@ function CopyToast({ show }) {
         position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
         zIndex: 200, padding: '10px 20px', borderRadius: '100px',
         background: 'rgba(17,17,24,.95)', border: '1px solid rgba(255,255,255,.1)',
-        color: '#f0eeff', fontSize: '13px', fontWeight: 500,
+        color: '#f5f5f7', fontSize: '13px', fontWeight: 500,
         backdropFilter: 'blur(12px)',
         animation: 'bp-up .3s var(--bp-ease) both',
       }}
