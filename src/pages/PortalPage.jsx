@@ -19,9 +19,22 @@ const SOCIAL_LINKS = [
   },
 ]
 
+/* 数据源：藏宝图（/xianyu/）战绩记录模板 · 统计截至 2026-08-04 */
 const ANALYST_STATS = {
-  recent: { wins: 3, total: 5, profit: '+1.8', label: '近5场推荐' },
-  model: { rate: '72%', label: '赛季综合准确率', extra: '基于逻辑透镜模型' },
+  single: {
+    label: '单场战绩',
+    total: 17,
+    hits: 13,
+    rate: '76.5%',
+    streak: '连红 1 场',
+  },
+  parlay: {
+    label: '二串一战绩',
+    total: 17,
+    hits: 10,
+    rate: '58.8%',
+    streak: '连红 1 单',
+  },
 }
 
 const LOTTERY_IMAGES = [
@@ -682,35 +695,26 @@ export default function PortalPage() {
 
           <div className="bp-stats-grid bp-reveal">
             <div className="bp-stat-card">
-              <div className="bp-stat-eyebrow">{ANALYST_STATS.recent.label}</div>
-              <div className="bp-stat-num green">
-                {ANALYST_STATS.recent.wins}/{ANALYST_STATS.recent.total}
-              </div>
+              <div className="bp-stat-eyebrow">{ANALYST_STATS.single.label}</div>
+              <div className="bp-stat-num green">{ANALYST_STATS.single.rate}</div>
               <div className="bp-stat-label">
-                {ANALYST_STATS.recent.profit} 净赢
+                {ANALYST_STATS.single.total} 场 · 命中 {ANALYST_STATS.single.hits} 场
               </div>
+              <div className="bp-stat-sub">{ANALYST_STATS.single.streak}</div>
             </div>
             <div className="bp-stat-card">
-              <div className="bp-stat-eyebrow">数据模型</div>
-              <div className="bp-stat-num accent">{ANALYST_STATS.model.rate}</div>
-              <div className="bp-stat-label">{ANALYST_STATS.model.label}</div>
-              <div className="bp-stat-sub">{ANALYST_STATS.model.extra}</div>
+              <div className="bp-stat-eyebrow">{ANALYST_STATS.parlay.label}</div>
+              <div className="bp-stat-num accent">{ANALYST_STATS.parlay.rate}</div>
+              <div className="bp-stat-label">
+                {ANALYST_STATS.parlay.total} 单 · 红单 {ANALYST_STATS.parlay.hits} 单
+              </div>
+              <div className="bp-stat-sub">{ANALYST_STATS.parlay.streak}</div>
             </div>
           </div>
 
           <div className="bp-reveal">
             <LotteryCarousel images={LOTTERY_IMAGES} />
           </div>
-
-          {/* ── 我中奖了吗 工具入口 ── */}
-          <a href="/lottery/" className="bp-lottery-tool bp-reveal" target="_self">
-            <div className="bp-lt-icon">🎰</div>
-            <div className="bp-lt-body">
-              <div className="bp-lt-title">我中奖了吗？</div>
-              <div className="bp-lt-desc">录入彩票号码，一键查询双色球 / 大乐透开奖结果</div>
-            </div>
-            <div className="bp-lt-arrow">→</div>
-          </a>
 
         </section>
 
