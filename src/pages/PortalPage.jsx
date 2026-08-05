@@ -37,6 +37,38 @@ const ANALYST_STATS = {
   },
 }
 
+/* 产品矩阵：与全局导航一致，featured 卡占 Bento 大格 */
+const PRODUCTS = [
+  {
+    key: 'odds',
+    name: '足球当铺',
+    tagline: '每日二串一工作台',
+    desc: '亚盘拆盘，单场 + 二串一实盘记录，盘口思路每日更新。',
+    href: '/odds/',
+    emoji: '⚽',
+    accent: '#4ecfb3',
+    featured: true,
+  },
+  {
+    key: 'lottery',
+    name: '财富密码',
+    tagline: '开奖速查',
+    desc: '录入号码，一键查询双色球 / 大乐透开奖结果。',
+    href: '/lottery/',
+    emoji: '🎰',
+    accent: '#d4af37',
+  },
+  {
+    key: 'xianyu',
+    name: '藏宝图',
+    tagline: '战绩归档',
+    desc: '单场 / 2串1 战绩记录与流量打法沉淀。',
+    href: '/xianyu/',
+    emoji: '🗺️',
+    accent: '#5dade2',
+  },
+]
+
 const LOTTERY_IMAGES = [
   '/images/lottery-1.jpg',
   '/images/lottery-2.jpg',
@@ -47,8 +79,6 @@ const LOTTERY_IMAGES = [
 /* ── Styles ─────────────────────────────────────────────── */
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-
   :root {
     --bp-bg:        #0a0a0f;
     --bp-card:      #111118;
@@ -83,45 +113,12 @@ const STYLES = `
   }
   .bp-wrap > * { position: relative; z-index: 1; }
 
-  /* ── nav ── */
-  .bp-nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    background: rgba(10,10,15,.72);
-    border-bottom: 1px solid var(--bp-border);
-  }
-  .bp-nav-inner {
-    max-width: 1200px; margin: 0 auto;
-    padding: 0 clamp(1.25rem,4vw,3.5rem);
-    height: 56px; display: flex; align-items: center; justify-content: space-between;
-  }
-  .bp-logo {
-    display: flex; align-items: center; gap: 9px;
-    text-decoration: none; font-family: var(--bp-display);
-    font-size: 16px; font-weight: 700; letter-spacing: -.02em; color: var(--bp-primary);
-  }
-  .bp-logo-dot {
-    width: 7px; height: 7px; border-radius: 50%; background: var(--bp-accent);
-    box-shadow: 0 0 12px var(--bp-accent);
-    animation: bp-pulse 2.4s ease-in-out infinite;
-  }
-  .bp-nav-links { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
-  .bp-nav-links a {
-    color: var(--bp-secondary); text-decoration: none; font-size: 13px;
-    transition: color .2s; cursor: pointer;
-  }
-  .bp-nav-links a:hover { color: var(--bp-primary); }
-
-  @media (max-width: 500px) {
-    .bp-nav-links.desktop { display: none; }
-  }
-
   /* ── hero ── */
   .bp-hero {
-    min-height: 100vh;
+    min-height: calc(100vh - 48px);
     max-width: 1200px; margin: 0 auto;
     display: flex; flex-direction: column; justify-content: center;
-    padding: calc(56px + clamp(1.5rem, 3vw, 2.5rem)) clamp(1.25rem,4vw,3.5rem);
+    padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem,4vw,3.5rem);
   }
 
   .bp-hero-grid {
@@ -246,6 +243,66 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center;
     padding: 2rem;
     z-index: 2;
+  }
+
+  /* ── products bento ── */
+  .bp-products {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .bp-pcard {
+    display: flex; flex-direction: column; justify-content: space-between; gap: 1.1rem;
+    padding: 1.5rem 1.6rem;
+    border-radius: 22px;
+    background: var(--bp-card);
+    border: 1px solid var(--bp-border);
+    text-decoration: none; color: var(--bp-primary);
+    overflow: hidden;
+    transition: border-color .35s, transform .35s var(--bp-ease), box-shadow .35s;
+  }
+  .bp-pcard:hover {
+    border-color: var(--bp-border-h);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 44px rgba(0,0,0,.32);
+  }
+  .bp-pcard-feature { grid-row: span 2; }
+  .bp-pc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .bp-pc-icon {
+    width: 50px; height: 50px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .bp-pc-badge {
+    font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--bp-muted); border: 1px solid var(--bp-border);
+    padding: 4px 10px; border-radius: 100px; white-space: nowrap;
+  }
+  .bp-pc-body { min-width: 0; }
+  .bp-pc-name {
+    font-family: var(--bp-display);
+    font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+    font-weight: 700; letter-spacing: -.02em; line-height: 1.2;
+  }
+  .bp-pc-tagline {
+    font-size: 12.5px; font-weight: 500; margin-top: 3px; letter-spacing: .02em;
+  }
+  .bp-pc-desc {
+    font-size: 13px; color: var(--bp-secondary); font-weight: 300;
+    line-height: 1.65; margin-top: 10px; max-width: 340px;
+  }
+  .bp-pc-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--bp-accent); margin-top: auto;
+  }
+  .bp-pc-cta .arr { transition: transform .25s var(--bp-ease); }
+  .bp-pcard:hover .bp-pc-cta .arr { transform: translateX(4px); }
+
+  @media (max-width: 720px) {
+    .bp-products { grid-template-columns: 1fr; }
+    .bp-pcard-feature { grid-row: auto; }
+    .bp-pcard { padding: 1.25rem 1.35rem; }
   }
 
   /* ── section ── */
@@ -483,7 +540,6 @@ const STYLES = `
     50% { opacity: .7; box-shadow: 0 0 16px var(--bp-accent); }
   }
   @keyframes bp-up { from { opacity:0; transform: translateY(18px) } to { opacity:1; transform: translateY(0) } }
-  .bp-nav { animation: bp-up .6s var(--bp-ease) both; }
 
   /* ── responsive ── */
   @media (max-width: 900px) {
@@ -497,7 +553,7 @@ const STYLES = `
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bp-reveal, .bp-logo-dot {
+    .bp-reveal {
       animation: none !important; transition: none !important;
     }
     .bp-reveal { opacity: 1; transform: none; }
@@ -638,19 +694,6 @@ export default function PortalPage() {
 
       <div className="bp-wrap">
 
-        <header className="bp-nav">
-          <div className="bp-nav-inner">
-            <a href="/" className="bp-logo">
-              <span className="bp-logo-dot" />
-              Blake Pierce
-            </a>
-            <ul className="bp-nav-links desktop">
-              <li><a href="#stats">战绩</a></li>
-              <li><a href="#about">联系</a></li>
-            </ul>
-          </div>
-        </header>
-
         {/* ═══ 第一屏：HERO ═══ */}
         <section className="bp-hero">
           <div className="bp-hero-grid">
@@ -689,8 +732,44 @@ export default function PortalPage() {
           </div>
         </section>
 
+        {/* ═══ 产品区：Bento ═══ */}
+        <section className="bp-section bp-reveal">
+          <div className="bp-sec-label bp-reveal">我的产品</div>
+          <div className="bp-products">
+            {PRODUCTS.map(p => (
+              <a
+                key={p.key}
+                href={p.href}
+                className={`bp-pcard${p.featured ? ' bp-pcard-feature' : ''}`}
+                style={{
+                  background: `radial-gradient(120% 110% at 15% 0%, ${p.accent}16, transparent 55%), var(--bp-card)`,
+                }}
+              >
+                <div className="bp-pc-top">
+                  <span
+                    className="bp-pc-icon"
+                    style={{ background: `${p.accent}1f`, color: p.accent }}
+                  >
+                    {p.emoji}
+                  </span>
+                  {p.featured && <span className="bp-pc-badge">每日更新</span>}
+                </div>
+                <div className="bp-pc-body">
+                  <div className="bp-pc-name">{p.name}</div>
+                  <div className="bp-pc-tagline" style={{ color: p.accent }}>{p.tagline}</div>
+                  <div className="bp-pc-desc">{p.desc}</div>
+                </div>
+                <span className="bp-pc-cta">
+                  进入
+                  <span className="arr">→</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+
         {/* ═══ 第二屏：战绩展示 ═══ */}
-        <section id="stats" className="bp-section" style={{ scrollMarginTop: '72px' }}>
+        <section id="stats" className="bp-section" style={{ scrollMarginTop: '64px' }}>
           <div className="bp-sec-label bp-reveal">战绩展示</div>
 
           <div className="bp-stats-grid bp-reveal">
@@ -719,7 +798,7 @@ export default function PortalPage() {
         </section>
 
         {/* ═══ 第三屏：关于 / 联系 ═══ */}
-        <section id="about" className="bp-about-wrap bp-reveal" style={{ scrollMarginTop: '72px' }}>
+        <section id="about" className="bp-about-wrap bp-reveal" style={{ scrollMarginTop: '64px' }}>
           <div className="bp-about-avatar">BP</div>
           <div className="bp-about-name">Blake Pierce</div>
           <div className="bp-about-role">足球数据分析师 · 独立开发者</div>

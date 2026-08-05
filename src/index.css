@@ -37,6 +37,8 @@
       "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 固定顶栏高度（48px）预留 */
+    padding-top: 48px;
   }
 
   ::selection {
