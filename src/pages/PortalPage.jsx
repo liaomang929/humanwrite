@@ -121,15 +121,9 @@ const STYLES = `
     padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem,4vw,3.5rem);
   }
 
-  .bp-hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: center;
-  }
-
   .bp-hero-copy {
     display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center;
   }
 
   .bp-hero-eyebrow {
@@ -164,7 +158,7 @@ const STYLES = `
     width: 32px; height: 2px;
     background: var(--bp-accent);
     border-radius: 2px;
-    margin-bottom: 1rem;
+    margin: 0 auto 1rem;
   }
 
   .bp-hero-bio {
@@ -173,7 +167,7 @@ const STYLES = `
     line-height: 1.7;
     max-width: 440px;
     font-weight: 300;
-    margin-bottom: 1.5rem;
+    margin: 0 auto 1.5rem;
   }
 
   .bp-social-row {
@@ -181,6 +175,7 @@ const STYLES = `
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 1.5rem;
+    justify-content: center;
   }
 
   .bp-social-btn {
@@ -224,25 +219,6 @@ const STYLES = `
   .bp-hero-cta:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(124,110,240,.35);
-  }
-
-  .bp-hero-visual {
-    position: relative; aspect-ratio: 4/3; border-radius: 24px;
-    overflow: hidden;
-    border: 1px solid var(--bp-border);
-    background: var(--bp-card);
-  }
-  .bp-hero-visual::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(124,110,240,.18), transparent);
-    z-index: 1;
-  }
-  .bp-hero-visual-inner {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    padding: 2rem;
-    z-index: 2;
   }
 
   /* ── products bento ── */
@@ -543,8 +519,6 @@ const STYLES = `
 
   /* ── responsive ── */
   @media (max-width: 900px) {
-    .bp-hero-grid { grid-template-columns: 1fr; }
-    .bp-hero-visual { aspect-ratio: 16/10; min-height: 200px; }
     .bp-carousel { max-height: 70vh; }
   }
 
@@ -629,26 +603,6 @@ function LotteryCarousel({ images }) {
   )
 }
 
-function DataDashboardPreview() {
-  return (
-    <div className="bp-mock" style={{ width: '100%', height: '100%', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <div className="bp-mock-pills" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-        {['英超', '西甲', '意甲'].map(l => (
-          <span key={l} style={{ fontSize: '9px', padding: '3px 8px', borderRadius: '100px', background: 'rgba(255,255,255,.06)', color: 'var(--bp-secondary)' }}>{l}</span>
-        ))}
-      </div>
-      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(124,110,240,.5)', width: '60%' }} />
-      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,.08)', width: '80%' }} />
-      <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,.08)', width: '45%' }} />
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '60px', marginTop: 'auto' }}>
-        {[40, 65, 45, 80, 55, 70, 50].map((h, i) => (
-          <div key={i} style={{ flex: 1, borderRadius: '4px 4px 0 0', background: 'rgba(124,110,240,.3)', height: `${h}%` }} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
 /* ── Page ───────────────────────────────────────────────── */
 
 export default function PortalPage() {
@@ -696,38 +650,30 @@ export default function PortalPage() {
 
         {/* ═══ 第一屏：HERO ═══ */}
         <section className="bp-hero">
-          <div className="bp-hero-grid">
-            <div className="bp-hero-copy">
-              <div className="bp-hero-eyebrow">足球数据分析师 / 独立工作室</div>
-              <div className="bp-hero-subname">一包华子</div>
-              <p className="bp-hero-tagline">用数据看懂比赛，用逻辑解读机构意图。</p>
-              <div className="bp-hero-divider" />
-              <p className="bp-hero-bio">
-                一句话献给你！
-                <br />
-                看懂盘口之前，先学会克制自己。
-                <br />
-                足球比赛不是用来证明你多聪明的，而是考验你——何时该上，何时该退。
-              </p>
+          <div className="bp-hero-copy">
+            <div className="bp-hero-eyebrow">足球数据分析师 / 独立工作室</div>
+            <div className="bp-hero-subname">一包华子</div>
+            <p className="bp-hero-tagline">用数据看懂比赛，用逻辑解读机构意图。</p>
+            <div className="bp-hero-divider" />
+            <p className="bp-hero-bio">
+              一句话献给你！
+              <br />
+              看懂盘口之前，先学会克制自己。
+              <br />
+              足球比赛不是用来证明你多聪明的，而是考验你——何时该上，何时该退。
+            </p>
 
-              <div className="bp-social-row">
-                {SOCIAL_LINKS.map(s => (
-                  <button
-                    key={s.key}
-                    className={`bp-social-btn${s.primary ? ' primary' : ''}`}
-                    onClick={() => handleCopy(s.copyId)}
-                    title={s.tooltip}
-                  >
-                    <span>{s.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="bp-hero-visual">
-              <div className="bp-hero-visual-inner">
-                <DataDashboardPreview />
-              </div>
+            <div className="bp-social-row">
+              {SOCIAL_LINKS.map(s => (
+                <button
+                  key={s.key}
+                  className={`bp-social-btn${s.primary ? ' primary' : ''}`}
+                  onClick={() => handleCopy(s.copyId)}
+                  title={s.tooltip}
+                >
+                  <span>{s.label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </section>
