@@ -4,7 +4,6 @@ import { usePageMeta } from '../hooks/usePageMeta'
 
 const PAGE_LABELS = {
   '/': '门户首页',
-  '/lab': '逻辑透镜',
   '/demo/classicore': '典萃',
   '/demo/aicleaner': '净言',
   '/demo/fansvote': '私域粉丝投票',

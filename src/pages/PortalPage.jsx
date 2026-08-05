@@ -12,12 +12,6 @@ const SOCIAL_LINKS = [
     primary: true,
   },
   {
-    key: 'kuaishou',
-    label: '快手',
-    copyId: '3855839273',
-    tooltip: '快手 ID：3855839273',
-  },
-  {
     key: 'qq',
     label: 'QQ',
     copyId: '68419964',
@@ -649,13 +643,15 @@ export default function PortalPage() {
           <div className="bp-hero-grid">
             <div className="bp-hero-copy">
               <div className="bp-hero-eyebrow">足球数据分析师 / 独立工作室</div>
-              <h1 className="bp-hero-name">Blake Pierce</h1>
               <div className="bp-hero-subname">一包华子</div>
               <p className="bp-hero-tagline">用数据看懂比赛，用逻辑解读机构意图。</p>
               <div className="bp-hero-divider" />
               <p className="bp-hero-bio">
-                分析足球比赛，也写代码做数据产品。
-                用机器学习解读比赛，用实战验证判断。
+                一句话献给你！
+                <br />
+                看懂盘口之前，先学会克制自己。
+                <br />
+                足球比赛不是用来证明你多聪明的，而是考验你——何时该上，何时该退。
               </p>
 
               <div className="bp-social-row">
@@ -670,10 +666,6 @@ export default function PortalPage() {
                   </button>
                 ))}
               </div>
-
-              <a href="/lab" className="bp-hero-cta">
-                探索逻辑透镜 →
-              </a>
             </div>
 
             <div className="bp-hero-visual">
@@ -736,11 +728,6 @@ export default function PortalPage() {
               <span className="bp-about-item-label">💬</span>
               <span className="bp-about-item-value">lmloveac</span>
               <span style={{ color: 'var(--bp-muted)', fontSize: '11px', marginLeft: 'auto' }}>微信</span>
-            </div>
-            <div className="bp-about-item" onClick={() => handleCopy('3855839273')}>
-              <span className="bp-about-item-label">🎬</span>
-              <span className="bp-about-item-value">3855839273</span>
-              <span style={{ color: 'var(--bp-muted)', fontSize: '11px', marginLeft: 'auto' }}>快手</span>
             </div>
             <div className="bp-about-item" onClick={() => handleCopy('68419964')}>
               <span className="bp-about-item-label">💎</span>

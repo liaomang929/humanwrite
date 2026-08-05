@@ -375,8 +375,8 @@ http.createServer((req, res) => {
     return;
   }
 
-  // ── Redirect /logiclens → portal ────────────────────────
-  if (p.startsWith('/logiclens')) {
+  // ── Redirect /logiclens and /lab → portal ───────────────
+  if (p.startsWith('/logiclens') || p === '/lab' || p.startsWith('/lab/')) {
     res.writeHead(302, { Location: '/' });
     res.end();
     return;
